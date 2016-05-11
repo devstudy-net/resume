@@ -3,6 +3,7 @@ package net.devstudy.resume.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.devstudy.resume.form.SkillForm;
+import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.EditProfileService;
 import net.devstudy.resume.util.SecurityUtil;
 
@@ -43,5 +45,10 @@ public class EditProfileController {
 	private String gotoSkillsJSP(Model model){
 		model.addAttribute("skillCategories", editProfileService.listSkillCategories());
 		return "edit/skills";
+	}
+	
+	@RequestMapping(value = "/my-profile")
+	public String getMyProfile(@AuthenticationPrincipal CurrentProfile currentProfile) {
+		return "redirect:/" + currentProfile.getUsername();
 	}
 }

@@ -2,6 +2,8 @@ package net.devstudy.resume.controller;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.devstudy.resume.Constants;
 import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.FindProfileService;
+import net.devstudy.resume.util.SecurityUtil;
 
 @Controller
 public class PublicDataController {
@@ -54,5 +58,24 @@ public class PublicDataController {
 		Page<Profile> profiles = findProfileService.findAll(pageable);
 		model.addAttribute("profiles", profiles.getContent());
 		return "fragment/profile-items";
+	}
+	
+	@RequestMapping(value = "/sign-in")
+	public String signIn() {
+		CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
+		if(currentProfile != null) {
+			return "redirect:/" + currentProfile.getUsername();
+		}
+		else{
+			return "sign-in";
+		}
+	}
+	
+	@RequestMapping(value = "/sign-in-failed")
+	public String signInFailed(HttpSession session) {
+		if (session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION") == null) {
+			return "redirect:/sign-in";
+		}
+		return "sign-in";
 	}
 }
