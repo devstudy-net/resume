@@ -30,9 +30,12 @@
 			<div class="form-group">
 				<label><input type="checkbox" name="remember-me" value="true"> Запомнить меня</label>
 			</div>
-			<div class="form-group">
+			<div class="form-group" style="display:table;width:100%;">
 			<button type="submit" class="btn btn-primary pull-left">Войти</button>
 			<a href="#" class="pull-right">Восстановить доступ</a>
+			</div>
+			<div class="form-group text-center">
+			<a href="/fbLogin" class="btn btn-warning">Войти через Facebook</a>
 			</div>
 		</form>
 	</div>
