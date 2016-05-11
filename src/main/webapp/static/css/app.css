@@ -57,3 +57,28 @@
     font-size: 0.9em;
     text-decoration: underline;
 }
+
+.resume .skill-delim {
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border-bottom: 1px solid #eee;
+}
+
+.resume .skill-delim .alert {
+	margin-bottom: 0;
+}
+
+.resume .skill-item textarea {
+	margin-right: 20px;
+}
+
+.resume .skill-item .value-container {
+	position: relative;
+}
+
+.resume .skill-item .value-container .close {
+	position: absolute;
+	right: 15px;
+	top:-5px;
+}

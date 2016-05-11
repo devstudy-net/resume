@@ -1,9 +1,9 @@
 <%@ tag pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 
 <div class="panel panel-primary">
-	<a href="/edit"><img class="img-responsive photo" src="/media/avatar/7dd3413a-b88a-4037-bcbd-f217db454082.jpg" alt="photo"></a>
+	<a href="/edit"><img class="img-responsive photo" src="${profile.largePhoto}" alt="photo"></a>
 	<h1 class="text-center">
-		<a style="color: black;" href="/edit">${fullName}</a>
+		<a style="color: black;" href="/edit">${profile.fullName}</a>
 	</h1>
 	<h6 class="text-center">
 		<strong>Odessa, Ukraine</strong>
