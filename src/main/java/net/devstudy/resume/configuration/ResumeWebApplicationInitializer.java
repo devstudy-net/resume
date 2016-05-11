@@ -10,6 +10,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.sitemesh.builder.SiteMeshFilterBuilder;
 import org.sitemesh.config.ConfigurableSiteMeshFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,6 +51,7 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 	private void registerFilters(ServletContext container, WebApplicationContext ctx) {
 		registerFilter(container, ctx.getBean(ResumeFilter.class));
 		registerFilter(container, new CharacterEncodingFilter("UTF-8", true));
+		registerFilter(container, new OpenEntityManagerInViewFilter());
 		registerFilter(container, buildConfigurableSiteMeshFilter(), "sitemesh");
 	}
 
