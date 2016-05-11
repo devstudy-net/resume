@@ -17,6 +17,8 @@ import javax.persistence.Transient;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 
  * @author devstudy
@@ -60,6 +62,7 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 	// bi-directional many-to-one association to Profile
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_profile", nullable = false)
+	@JsonIgnore
 	private Profile profile;
 
 	public Practic() {
