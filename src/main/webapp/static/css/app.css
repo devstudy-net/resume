@@ -82,3 +82,35 @@
 	right: 15px;
 	top:-5px;
 }
+
+.resume .profiles blockquote {
+	margin: 0;
+	padding-left: 8px;
+}
+
+.resume .profiles .search-result-item p {
+	margin: 1px 0;
+}
+
+.resume .well p {
+	margin: 0;
+}
+
+.resume #loadMoreContainer {
+	margin-bottom: 15px;
+}
+.resume #loadMoreIndicator img {
+	width: 30px;
+	height: 30px;
+}
+
+.resume .small-center-block {
+	width: 440px;
+	margin: 0 auto;
+}
+
+.resume .profiles .photo {
+    border-radius: 4px;
+    height: 110px;
+    width: 110px;
+}
