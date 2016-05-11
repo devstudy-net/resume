@@ -3,26 +3,14 @@
 <div class="panel panel-primary">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<i class="fa fa-bicycle" aria-hidden="true"></i> Objective
+			<i class="fa fa-bullseye"></i> Objective <a class="edit-block" href="/edit#inputObjective">Edit</a>
 		</h3>
 	</div>
 	<div class="panel-body">
-		<form>
-			<div class="form-group">
-				<label for="exampleInputEmail1">Email address</label> <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-			</div>
-			<div class="form-group">
-				<label for="exampleInputPassword1">Password</label> <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-			</div>
-			<div class="form-group">
-				<label for="exampleInputFile">File input</label> <input type="file" id="exampleInputFile">
-				<p class="help-block">Example block-level help text here.</p>
-			</div>
-			<div class="checkbox">
-				<label> <input type="checkbox"> Check me out
-				</label>
-			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
-		</form>
+		<h4>Junior java developer position</h4>
+		<p>
+			<strong>Summary of Qualifications:</strong> <br> Three Java professional courses with developing one console application and two web
+			applications: blog and resume (Links to demo are provided)
+		</p>
 	</div>
 </div>

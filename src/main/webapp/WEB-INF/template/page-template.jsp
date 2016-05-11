@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <jsp:include page="../section/css.jsp" />
 </head>
-<body>
+<body class="resume">
 	<jsp:include page="../section/header.jsp" />
 	<jsp:include page="../section/nav.jsp" />
 	<section class="main">
