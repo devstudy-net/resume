@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.repository.storage.ProfileRepository;
+import net.devstudy.resume.service.FindProfileService;
 
 @Controller
 public class PublicDataController {
 	
 	@Autowired
-	private ProfileRepository profileRepository;
+	private FindProfileService findProfileService;
 
 	@RequestMapping(value="/{uid}", method=RequestMethod.GET)
 	public String getProfile(@PathVariable("uid") String uid, Model model){
-		Profile profile = profileRepository.findByUid(uid);
+		Profile profile = findProfileService.findByUid(uid);
 		if(profile == null) {
 			return "profile_not_found";
 		}

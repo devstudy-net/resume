@@ -3,7 +3,6 @@ package net.devstudy.resume.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,17 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.devstudy.resume.form.SkillForm;
-import net.devstudy.resume.repository.storage.ProfileRepository;
-import net.devstudy.resume.repository.storage.SkillCategoryRepository;
+import net.devstudy.resume.service.EditProfileService;
+import net.devstudy.resume.util.SecurityUtil;
 
 @Controller
 public class EditProfileController {
 	
 	@Autowired
-	private SkillCategoryRepository skillCategoryRepository;
-	
-	@Autowired
-	private ProfileRepository profileRepository;
+	private EditProfileService editProfileService;
 	
 	@RequestMapping(value="/edit", method=RequestMethod.GET)
 	public String getEditProfile(){
@@ -31,7 +27,7 @@ public class EditProfileController {
 	
 	@RequestMapping(value = "/edit/skills", method = RequestMethod.GET)
 	public String getEditSkills(Model model) {
-		model.addAttribute("skillForm", new SkillForm(profileRepository.findOne(1L).getSkills()));
+		model.addAttribute("skillForm", new SkillForm(editProfileService.listSkills(SecurityUtil.getCurrentIdProfile())));
 		return gotoSkillsJSP(model);
 	}
 
@@ -40,12 +36,12 @@ public class EditProfileController {
 		if (bindingResult.hasErrors()) {
 			return gotoSkillsJSP(model);
         }
-		//TODO Update skills 
+		editProfileService.updateSkills(SecurityUtil.getCurrentIdProfile(), form.getItems());
 		return "redirect:/mike-ross";
 	}
 	
 	private String gotoSkillsJSP(Model model){
-		model.addAttribute("skillCategories", skillCategoryRepository.findAll(new Sort("id")));
+		model.addAttribute("skillCategories", editProfileService.listSkillCategories());
 		return "edit/skills";
 	}
 }
