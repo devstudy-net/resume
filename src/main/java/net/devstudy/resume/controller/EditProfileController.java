@@ -1,5 +1,7 @@
 package net.devstudy.resume.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -28,13 +30,13 @@ public class EditProfileController {
 	}
 	
 	@RequestMapping(value = "/edit/skills", method = RequestMethod.GET)
-	public String getEditTechSkills(Model model) {
+	public String getEditSkills(Model model) {
 		model.addAttribute("skillForm", new SkillForm(profileRepository.findOne(1L).getSkills()));
 		return gotoSkillsJSP(model);
 	}
 
 	@RequestMapping(value = "/edit/skills", method = RequestMethod.POST)
-	public String saveEditTechSkills(@ModelAttribute("skillForm") SkillForm form, BindingResult bindingResult, Model model) {
+	public String saveEditSkills(@Valid @ModelAttribute("skillForm") SkillForm form, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
 			return gotoSkillsJSP(model);
         }
