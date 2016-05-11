@@ -1,0 +1,44 @@
+## Public URLS
+GET  /{uid}
+GET  /welcome
+GET  /search
+GET  /sign-in
+GET  /sign-up
+POST /sign-up
+GET  /sign-up/success
+GET  /error
+GET  /sign-in-failed
+GET  /restore
+GET  /restore/success
+POST /restore
+GET  /restore/{token}
+
+## Edit account data URLS
+GET  /my-profile
+GET  /edit
+POST /edit
+GET  /edit/contacts
+POST /edit/contacts
+GET  /edit/skills
+POST /edit/skills
+GET  /edit/practics
+POST /edit/practics
+GET  /edit/certificates
+POST /edit/certificates
+POST /edit/certificates/upload
+GET  /edit/courses
+POST /edit/courses
+GET  /edit/education
+POST /edit/education
+GET  /edit/languages
+POST /edit/languages
+GET  /edit/hobbies
+POST /edit/hobbies
+GET  /edit/info
+POST /edit/info
+GET  /edit/password
+POST /edit/password
+
+## Remove account data URLS
+GET  /remove
+POST /remove

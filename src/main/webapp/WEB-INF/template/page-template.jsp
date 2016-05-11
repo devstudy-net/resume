@@ -9,7 +9,6 @@
 <body class="resume">
 	<jsp:include page="../section/header.jsp" />
 	<jsp:include page="../section/nav.jsp" />
-	<h1>${production }</h1>
 	<section class="main">
 		<sitemesh:write property='body' />
 	</section>
