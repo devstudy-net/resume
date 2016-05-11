@@ -1,4 +1,4 @@
-package net.devstudy.resume.listener;
+package net.devstudy.resume.component.impl;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

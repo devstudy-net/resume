@@ -20,8 +20,8 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import net.devstudy.resume.component.impl.ApplicationListener;
 import net.devstudy.resume.filter.ResumeFilter;
-import net.devstudy.resume.listener.ApplicationListener;
 
 /**
  * 
