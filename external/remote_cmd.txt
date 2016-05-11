@@ -1,0 +1,68 @@
+sudo apt-get update
+sudo apt-get install openjdk-7-jre
+java -version
+sudo apt-get install tomcat7
+# Please visit: ${HOST}:8080 to verify that tomcat successful installed
+sudo apt-get install nginx
+# Please visit: ${HOST}:80 to verify that nginx successful installed
+
+sudo apt-get -y install python-software-properties
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
+sudo apt-get update
+sudo apt-get install postgresql-9.5 pgadmin3
+
+sudo apt-get install imagemagick libmagickcore-dev
+whereis convert
+sudo apt-get install optipng
+sudo apt-get install libjpeg-progs
+sudo apt-get install postfix
+sudo apt-get install p7zip-full
+
+#### https://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/ #####
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+lsb_release -a
+echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+#The following three commands write required changes in /etc/postgresql/9.5/main/pg_hba.conf, instead of using vi manually
+sudo sh -c 'echo "local all all trust" >> /etc/postgresql/9.5/main/pg_hba.conf'
+sudo sh -c 'echo "host all all 127.0.0.1/32 trust" >> /etc/postgresql/9.5/main/pg_hba.conf'
+sudo sh -c 'echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/9.5/main/pg_hba.conf'
+
+sudo nano /etc/postgresql/9.5/main/postgresql.conf
+### Please add the following configs:
+#listen_addresses = '*'
+
+sudo service postgresql restart
+sudo passwd postgres
+
+pg_dump --host=localhost --username=db-user --password= db_name > dump.sql 
+7z a dmp.7z dump.sql
+7z e dump.7z
+psql -h localhost -d db_name db_name < dump.sql
+
+sudo chmod -R 777 /var/lib/tomcat7/webapps
+sudo chmod -R 777 /var/log/tomcat7
+
+sudo rm /etc/nginx/nginx.conf
+sudo mv /home/ubuntu/nginx.conf /etc/nginx/nginx.conf
+sudo chmod -R 644 /etc/nginx/nginx.conf
+sudo chown root /etc/nginx/nginx.conf
+
+sudo rm /etc/nginx/sites-available/default
+sudo mv /home/ubuntu/default /etc/nginx/sites-available/default
+sudo chmod -R 644 /etc/nginx/sites-available/default
+sudo chown root /etc/nginx/sites-available/default
+
+sudo service nginx restart
+
+sudo mkdir /var/resume
+sudo mkdir /var/resume/logs
+sudo chmod -R 777 /var/resume/logs
+sudo mkdir /var/resume/web
+sudo chmod -R 777 /var/resume/web
+sudo ln -s /var/lib/tomcat7/webapps/ROOT/static /var/resume/web
+sudo mkdir /var/resume/web/media
+sudo chmod -R 777 /var/resume/web/media
