@@ -20,7 +20,7 @@ import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.component.ImageFormatConverter;
 import net.devstudy.resume.component.ImageOptimizator;
 import net.devstudy.resume.component.ImageResizer;
-import net.devstudy.resume.component.impl.UploadCertificateLinkManager;
+import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.component.impl.UploadImageTempStorage;
 import net.devstudy.resume.exception.CantCompleteClientRequestException;
 import net.devstudy.resume.model.UploadCertificateResult;
@@ -55,7 +55,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 	private UploadImageTempStorage uploadImageTempStorage;
 	
 	@Autowired
-	private UploadCertificateLinkManager uploadCertificateLinkManager;
+	private UploadCertificateLinkTempStorage uploadCertificateLinkManager;
 	
 	@Autowired
 	protected DataBuilder dataBuilder;
@@ -89,15 +89,17 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 		UploadTempPath uploadTempPath = getCurrentUploadTempPath();
 		transferUploadToFile(multipartFile, uploadTempPath.getLargeImagePath());
 		resizeAndOptimizeUpload(uploadTempPath, imageType);
-		String largePhotoLink = imageStorageService.saveAndReturnImageLink(largePhoto, imageType, uploadTempPath.getLargeImagePath());
-		String smallPhotoLink = imageStorageService.saveAndReturnImageLink(smallPhoto, imageType, uploadTempPath.getSmallImagePath());
+		String largePhotoLink = imageStorageService.createImageLink(largePhoto, imageType);
+		imageStorageService.save(largePhotoLink, uploadTempPath.getLargeImagePath());
+		String smallPhotoLink = imageStorageService.createImageLink(smallPhoto, imageType);
+		imageStorageService.save(smallPhotoLink, uploadTempPath.getSmallImagePath());
 		return new UploadResult(largePhotoLink, smallPhotoLink);
 	}
 	
 	protected void resizeAndOptimizeUpload(UploadTempPath uploadTempPath, UIImageType imageType) throws IOException {
-		imageResizer.resizeImage(uploadTempPath.getLargeImagePath(), uploadTempPath.getSmallImagePath(), imageType.getSmallWidth(), imageType.getSmallHeight());
+		imageResizer.resize(uploadTempPath.getLargeImagePath(), uploadTempPath.getSmallImagePath(), imageType.getSmallWidth(), imageType.getSmallHeight());
 		imageOptimizator.optimize(uploadTempPath.getSmallImagePath());
-		imageResizer.resizeImage(uploadTempPath.getLargeImagePath(), uploadTempPath.getLargeImagePath(), imageType.getLargeWidth(), imageType.getLargeHeight());
+		imageResizer.resize(uploadTempPath.getLargeImagePath(), uploadTempPath.getLargeImagePath(), imageType.getLargeWidth(), imageType.getLargeHeight());
 		imageOptimizator.optimize(uploadTempPath.getLargeImagePath());
 	}
 
@@ -118,7 +120,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 		LOGGER.debug("Content type for upload {}", contentType);
 		uploadPhoto.transferTo(destPath.toFile());
 		if (contentType.contains("png")) {
-			pngToJpegImageFormatConverter.convertImage(destPath, destPath);
+			pngToJpegImageFormatConverter.convert(destPath, destPath);
 		} else if (!contentType.contains("jpg") && !contentType.contains("jpeg")) {
 			throw new CantCompleteClientRequestException("Only png and jpg image formats are supported: Current content type=" + contentType);
 		}

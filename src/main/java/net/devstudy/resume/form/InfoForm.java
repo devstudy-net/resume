@@ -3,7 +3,7 @@ package net.devstudy.resume.form;
 import org.hibernate.validator.constraints.SafeHtml;
 
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 
 /**
  * 

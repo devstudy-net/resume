@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author devstudy
  * @see http://devstudy.net
  */
-public abstract class AbstractFinishDateEntity<T> {
+public abstract class AbstractFinishDateDocument<T> {
 
 	@JsonIgnore
 	private Date finishDate;

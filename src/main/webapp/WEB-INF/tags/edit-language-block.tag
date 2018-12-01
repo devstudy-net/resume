@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" 	uri="http://www.springframework.org/tags" %> 
 
 <%@ attribute name="index" 		required="true"  type="java.lang.Object" %>
-<%@ attribute name="language" 	required="false" type="net.devstudy.resume.entity.Language" %>
+<%@ attribute name="language" 	required="false" type="net.devstudy.resume.domain.Language" %>
 
 <div id="ui-item-${index }" class="panel panel-default">
 	<div class="panel-body ui-item">

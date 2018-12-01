@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.model.CurrentProfileImpl;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 

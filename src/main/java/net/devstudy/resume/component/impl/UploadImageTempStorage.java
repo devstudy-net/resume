@@ -20,10 +20,6 @@ public class UploadImageTempStorage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UploadImageTempStorage.class);
 	private final ThreadLocal<UploadTempPath> currentUploadTempPath = new ThreadLocal<>();
 
-	public UploadTempPath getCurrentUploadTempPath() {
-		return currentUploadTempPath.get();
-	}
-
 	@Around("@annotation(net.devstudy.resume.annotation.EnableUploadImageTempStorage)")
 	public Object advice(ProceedingJoinPoint pjp) throws Throwable {
 		UploadTempPath uploadTempPath = null;
@@ -42,6 +38,10 @@ public class UploadImageTempStorage {
 				deleteQuietly(uploadTempPath.getSmallImagePath());
 			}
 		}
+	}
+	
+	public UploadTempPath getCurrentUploadTempPath() {
+		return currentUploadTempPath.get();
 	}
 	
 	protected void deleteQuietly(Path path) {

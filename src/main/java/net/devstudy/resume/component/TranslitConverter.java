@@ -1,5 +1,7 @@
 package net.devstudy.resume.component;
 
+import javax.annotation.Nonnull;
+
 /**
  * 
  * @author devstudy
@@ -7,5 +9,5 @@ package net.devstudy.resume.component;
  */
 public interface TranslitConverter {
 
-	String translit(String text);
+	@Nonnull String translit(@Nonnull String text);
 }

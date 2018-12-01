@@ -3,20 +3,19 @@ package net.devstudy.resume.service;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.devstudy.resume.entity.Certificate;
-import net.devstudy.resume.entity.Contacts;
-import net.devstudy.resume.entity.Course;
-import net.devstudy.resume.entity.Education;
-import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.Language;
-import net.devstudy.resume.entity.Practic;
-import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.Skill;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.domain.Certificate;
+import net.devstudy.resume.domain.Contacts;
+import net.devstudy.resume.domain.Course;
+import net.devstudy.resume.domain.Education;
+import net.devstudy.resume.domain.Hobby;
+import net.devstudy.resume.domain.Language;
+import net.devstudy.resume.domain.Practic;
+import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.domain.Skill;
+import net.devstudy.resume.domain.SkillCategory;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.form.PasswordForm;
 import net.devstudy.resume.form.SignUpForm;
@@ -29,7 +28,7 @@ import net.devstudy.resume.model.CurrentProfile;
  */
 public interface EditProfileService {
 
-	@Nullable Profile findProfileById(@Nonnull CurrentProfile currentProfile);
+	@Nonnull Profile findProfileById(@Nonnull CurrentProfile currentProfile);
 	
 	@Nonnull Contacts findContactsById(@Nonnull CurrentProfile currentProfile);
 
@@ -45,33 +44,33 @@ public interface EditProfileService {
 	
 	void updateInfo(@Nonnull CurrentProfile currentProfile, @Nonnull InfoForm form);
 
-	@Nonnull List<Hobby> listHobbiesWithProfileSelected(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Hobby> findHobbiesWithProfileSelected(@Nonnull CurrentProfile currentProfile);
 
 	void updateHobbies(@Nonnull CurrentProfile currentProfile, @Nonnull List<String> hobbies);
 
-	@Nonnull List<Language> listLanguages(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Language> findLanguages(@Nonnull CurrentProfile currentProfile);
 
 	void updateLanguages(@Nonnull CurrentProfile currentProfile, @Nonnull List<Language> languages);
 
-	@Nonnull List<Skill> listSkills(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Skill> findSkills(@Nonnull CurrentProfile currentProfile);
 
-	@Nonnull List<SkillCategory> listSkillCategories();
+	@Nonnull List<SkillCategory> findSkillCategories();
 
 	void updateSkills(@Nonnull CurrentProfile currentProfile, @Nonnull List<Skill> skills);
 
-	@Nonnull List<Practic> listPractics(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Practic> findPractics(@Nonnull CurrentProfile currentProfile);
 
 	void updatePractics(@Nonnull CurrentProfile currentProfile, @Nonnull List<Practic> practics);
 
-	@Nonnull List<Education> listEducations(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Education> findEducations(@Nonnull CurrentProfile currentProfile);
 
 	void updateEducations(@Nonnull CurrentProfile currentProfile, @Nonnull List<Education> educations);
 
-	@Nonnull List<Certificate> listCertificates(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Certificate> findCertificates(@Nonnull CurrentProfile currentProfile);
 	
 	void updateCertificates(@Nonnull CurrentProfile currentProfile, @Nonnull List<Certificate> certificates);
 	
-	@Nonnull List<Course> listCourses(@Nonnull CurrentProfile currentProfile);
+	@Nonnull List<Course> findCourses(@Nonnull CurrentProfile currentProfile);
 	
 	void updateCourses(@Nonnull CurrentProfile currentProfile, @Nonnull List<Course> courses);
 }

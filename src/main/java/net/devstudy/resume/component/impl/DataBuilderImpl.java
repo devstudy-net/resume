@@ -32,7 +32,7 @@ public class DataBuilderImpl implements DataBuilder {
 	@Override
 	public String buildCertificateName(String fileName) {
 		if (fileName == null) {
-			return null;
+			return "";
 		}
 		int point = fileName.lastIndexOf('.');
 		if (point != -1) {

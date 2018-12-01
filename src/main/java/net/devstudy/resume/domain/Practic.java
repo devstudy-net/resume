@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,7 +10,7 @@ import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import net.devstudy.resume.annotation.EnableFormErrorConvertation;
+import net.devstudy.resume.annotation.EnableFormErrorConversion;
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 import net.devstudy.resume.annotation.constraints.FirstFieldLessThanSecond;
 import net.devstudy.resume.util.DataUtil;
@@ -21,8 +21,8 @@ import net.devstudy.resume.util.DataUtil;
  * @see http://devstudy.net
  */
 @FirstFieldLessThanSecond(first = "beginDate", second = "finishDate")
-@EnableFormErrorConvertation(formName="practicForm", fieldReference="finishDate", validationAnnotationClass=FirstFieldLessThanSecond.class)
-public class Practic extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity, Comparable<Practic> {
+@EnableFormErrorConversion(formName="practicForm", fieldReference="finishDate", validationAnnotationClass=FirstFieldLessThanSecond.class)
+public class Practic extends AbstractFinishDateDocument<Long> implements Serializable, ProfileCollectionField, Comparable<Practic> {
 	private static final long serialVersionUID = 1L;
 
 	@SafeHtml

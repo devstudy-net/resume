@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" 	uri="http://www.springframework.org/tags" %> 
 
 <%@ attribute name="index"   required="true" type="java.lang.Object"%>
-<%@ attribute name="course" required="false" type="net.devstudy.resume.entity.Course"%>
+<%@ attribute name="course" required="false" type="net.devstudy.resume.domain.Course"%>
 
 <div id="ui-item-${index }" class="panel panel-default">
 	<div class="panel-body ui-item">

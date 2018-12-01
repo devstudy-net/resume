@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ import net.devstudy.resume.annotation.constraints.EnglishLanguage;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class Skill implements Serializable, ProfileEntity, Comparable<Skill> {
+public class Skill implements Serializable, ProfileCollectionField, Comparable<Skill> {
 	private static final long serialVersionUID = 1L;
 
 	private Short idCategory;

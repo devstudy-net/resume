@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import net.devstudy.resume.annotation.EnableFormErrorConvertation;
+import net.devstudy.resume.annotation.EnableFormErrorConversion;
 import net.devstudy.resume.component.FormErrorConverter;
 import net.devstudy.resume.util.DataUtil;
 
@@ -24,14 +24,14 @@ import net.devstudy.resume.util.DataUtil;
 public class FormErrorConverterImpl implements FormErrorConverter {
 
 	@Override
-	public void convertFormErrorToFieldError(Class<? extends Annotation> validationAnnotationClass, Object formInstance, BindingResult bindingResult) {
+	public void convertToFieldError(Class<? extends Annotation> validationAnnotationClass, Object formInstance, BindingResult bindingResult) {
 		Annotation validationAnnotation = findValidationAnnotation(validationAnnotationClass, formInstance);
-		List<EnableFormErrorConvertation> metaAnnotations = findMetaAnnotations(formInstance);
+		List<EnableFormErrorConversion> metaAnnotations = findMetaAnnotations(formInstance);
 		boolean found = false;
-		for (EnableFormErrorConvertation metaAnnotation : metaAnnotations) {
+		for (EnableFormErrorConversion metaAnnotation : metaAnnotations) {
 			if (metaAnnotation.validationAnnotationClass() == validationAnnotationClass) {
-				processGlobalErrorConvertation(validationAnnotation, metaAnnotation, formInstance, bindingResult);
-				processFormFieldErrorConvertation(validationAnnotation, metaAnnotation, formInstance, bindingResult);
+				processGlobalErrorConversion(validationAnnotation, metaAnnotation, formInstance, bindingResult);
+				processFormFieldErrorConversion(validationAnnotation, metaAnnotation, formInstance, bindingResult);
 				found = true;
 				break;
 			}
@@ -42,7 +42,7 @@ public class FormErrorConverterImpl implements FormErrorConverter {
 		}
 	}
 
-	protected void processGlobalErrorConvertation(Annotation validationAnnotation, EnableFormErrorConvertation metaAnnotation, Object formInstance, BindingResult bindingResult) {
+	protected void processGlobalErrorConversion(Annotation validationAnnotation, EnableFormErrorConversion metaAnnotation, Object formInstance, BindingResult bindingResult) {
 		for (ObjectError objectError : bindingResult.getGlobalErrors()) {
 			for (String code : objectError.getCodes()) {
 				if (getCodeForAnnotation(validationAnnotation).equals(code)) {
@@ -53,7 +53,7 @@ public class FormErrorConverterImpl implements FormErrorConverter {
 		}
 	}
 
-	protected void processFormFieldErrorConvertation(Annotation validationAnnotation, EnableFormErrorConvertation metaAnnotation, Object formInstance, BindingResult bindingResult) {
+	protected void processFormFieldErrorConversion(Annotation validationAnnotation, EnableFormErrorConversion metaAnnotation, Object formInstance, BindingResult bindingResult) {
 		for (FieldError fieldError : bindingResult.getFieldErrors()) {
 			if (fieldError.getField().startsWith("items[") && fieldError.getField().endsWith("]")) {
 				for (String code : fieldError.getCodes()) {
@@ -75,12 +75,12 @@ public class FormErrorConverterImpl implements FormErrorConverter {
 		return validationAnnotation;
 	}
 
-	protected List<EnableFormErrorConvertation> findMetaAnnotations(Object formInstance) {
-		EnableFormErrorConvertation metaAnnotation = findAnnotation(EnableFormErrorConvertation.class, formInstance);
+	protected List<EnableFormErrorConversion> findMetaAnnotations(Object formInstance) {
+		EnableFormErrorConversion metaAnnotation = findAnnotation(EnableFormErrorConversion.class, formInstance);
 		if (metaAnnotation != null) {
 			return Collections.singletonList(metaAnnotation);
 		}
-		EnableFormErrorConvertation.List list = findAnnotation(EnableFormErrorConvertation.List.class, formInstance);
+		EnableFormErrorConversion.List list = findAnnotation(EnableFormErrorConversion.List.class, formInstance);
 		if (list != null) {
 			return Arrays.asList(list.value());
 		}
@@ -98,14 +98,14 @@ public class FormErrorConverterImpl implements FormErrorConverter {
 		return validationAnnotation.annotationType().getSimpleName();
 	}
 
-	protected void createFieldErrorForErrorCode(EnableFormErrorConvertation metaAnnotation, FieldError fieldError, Object formInstance, BindingResult bindingResult) {
+	protected void createFieldErrorForErrorCode(EnableFormErrorConversion metaAnnotation, FieldError fieldError, Object formInstance, BindingResult bindingResult) {
 		String fieldName = metaAnnotation.fieldReference();
 		String formName = metaAnnotation.formName();
 		Object value = DataUtil.readProperty(fieldError.getRejectedValue(), fieldName);
 		bindingResult.addError(new FieldError(formName, fieldError.getField() + "." + fieldName, value, false, fieldError.getCodes(), fieldError.getArguments(), fieldError.getDefaultMessage()));
 	}
 
-	protected void createFieldErrorForErrorCode(EnableFormErrorConvertation metaAnnotation, ObjectError objectError, Object formInstance, BindingResult bindingResult) {
+	protected void createFieldErrorForErrorCode(EnableFormErrorConversion metaAnnotation, ObjectError objectError, Object formInstance, BindingResult bindingResult) {
 		String fieldName = metaAnnotation.fieldReference();
 		String formName = metaAnnotation.formName();
 		Object value = formInstance instanceof Iterable<?> ? null : DataUtil.readProperty(formInstance, fieldName);

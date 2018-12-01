@@ -1,5 +1,7 @@
 package net.devstudy.resume.model;
 
+import javax.annotation.Nonnull;
+
 /**
  * 
  * @author devstudy
@@ -7,7 +9,7 @@ package net.devstudy.resume.model;
  */
 public interface CurrentProfile {
 
-	String getId();
+	@Nonnull String getId();
 	
-	String getUid();
+	@Nonnull String getUid();
 }

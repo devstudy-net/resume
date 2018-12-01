@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Transient;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class Hobby implements Serializable, Comparable<Hobby>, ProfileEntity {
+public class Hobby implements Serializable, Comparable<Hobby>, ProfileCollectionField {
 	private static final long serialVersionUID = 1L;
 
 	private String name;

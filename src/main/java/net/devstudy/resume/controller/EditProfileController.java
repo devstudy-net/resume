@@ -24,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import net.devstudy.resume.annotation.constraints.FieldMatch;
 import net.devstudy.resume.annotation.constraints.FirstFieldLessThanSecond;
 import net.devstudy.resume.component.FormErrorConverter;
-import net.devstudy.resume.entity.Contacts;
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Contacts;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.exception.FormValidationException;
 import net.devstudy.resume.form.CertificateForm;
 import net.devstudy.resume.form.CourseForm;
@@ -111,7 +111,7 @@ public class EditProfileController {
 
 	@RequestMapping(value = "/edit/skills", method = RequestMethod.GET)
 	public String getEditTechSkills(Model model) {
-		model.addAttribute("skillForm", new SkillForm(editProfileService.listSkills(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("skillForm", new SkillForm(editProfileService.findSkills(SecurityUtil.getCurrentProfile())));
 		return gotoSkillsJSP(model);
 	}
 
@@ -126,20 +126,20 @@ public class EditProfileController {
 	}
 	
 	private String gotoSkillsJSP(Model model){
-		model.addAttribute("skillCategories", editProfileService.listSkillCategories());
+		model.addAttribute("skillCategories", editProfileService.findSkillCategories());
 		return "edit/skills";
 	}
 
 	@RequestMapping(value = "/edit/practics", method = RequestMethod.GET)
 	public String getEditPractics(Model model) {
-		model.addAttribute("practicForm", new PracticForm(editProfileService.listPractics(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("practicForm", new PracticForm(editProfileService.findPractics(SecurityUtil.getCurrentProfile())));
 		return gotoPracticsJSP(model);
 	}
 
 	@RequestMapping(value = "/edit/practics", method = RequestMethod.POST)
 	public String saveEditPractics(@Valid @ModelAttribute("practicForm") PracticForm form, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			formErrorConverter.convertFormErrorToFieldError(FirstFieldLessThanSecond.class, form.getItems(), bindingResult);
+			formErrorConverter.convertToFieldError(FirstFieldLessThanSecond.class, form.getItems(), bindingResult);
 			return gotoPracticsJSP(model);
         } else {
         	editProfileService.updatePractics(SecurityUtil.getCurrentProfile(), form.getItems());
@@ -148,14 +148,14 @@ public class EditProfileController {
 	}
 	
 	private String gotoPracticsJSP(Model model){
-		model.addAttribute("years",  staticDataService.listPracticsYears());
-		model.addAttribute("months", staticDataService.mapMonths());
+		model.addAttribute("years",  staticDataService.findPracticsYears());
+		model.addAttribute("months", staticDataService.findMonthMap());
 		return "edit/practics";
 	}
 
 	@RequestMapping(value = "/edit/certificates", method = RequestMethod.GET)
 	public String getEditCertificates(Model model) {
-		model.addAttribute("certificateForm", new CertificateForm(editProfileService.listCertificates(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("certificateForm", new CertificateForm(editProfileService.findCertificates(SecurityUtil.getCurrentProfile())));
 		return "edit/certificates";
 	}
 
@@ -176,7 +176,7 @@ public class EditProfileController {
 	
 	@RequestMapping(value = "/edit/courses", method = RequestMethod.GET)
 	public String getEditCourses(Model model) {
-		model.addAttribute("courseForm", new CourseForm(editProfileService.listCourses(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("courseForm", new CourseForm(editProfileService.findCourses(SecurityUtil.getCurrentProfile())));
 		return gotoCoursesJSP(model);
 	}
 
@@ -191,21 +191,21 @@ public class EditProfileController {
 	}
 	
 	private String gotoCoursesJSP(Model model){
-		model.addAttribute("years",  staticDataService.listCourcesYears());
-		model.addAttribute("months", staticDataService.mapMonths());
+		model.addAttribute("years",  staticDataService.findCourcesYears());
+		model.addAttribute("months", staticDataService.findMonthMap());
 		return "edit/courses";
 	}
 
 	@RequestMapping(value = "/edit/education", method = RequestMethod.GET)
 	public String getEditEducation(Model model) {
-		model.addAttribute("educationForm", new EducationForm(editProfileService.listEducations(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("educationForm", new EducationForm(editProfileService.findEducations(SecurityUtil.getCurrentProfile())));
 		return gotoEducationJSP(model);
 	}
 
 	@RequestMapping(value = "/edit/education", method = RequestMethod.POST)
 	public String saveEditEducation(@Valid @ModelAttribute("educationForm") EducationForm form, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			formErrorConverter.convertFormErrorToFieldError(FirstFieldLessThanSecond.class, form.getItems(), bindingResult);
+			formErrorConverter.convertToFieldError(FirstFieldLessThanSecond.class, form.getItems(), bindingResult);
 			return gotoEducationJSP(model);
 		} else {
 			editProfileService.updateEducations(SecurityUtil.getCurrentProfile(), form.getItems());
@@ -214,14 +214,14 @@ public class EditProfileController {
 	}
 	
 	private String gotoEducationJSP(Model model){
-		model.addAttribute("years",  staticDataService.listEducationYears());
-		model.addAttribute("months", staticDataService.mapMonths());
+		model.addAttribute("years",  staticDataService.findEducationYears());
+		model.addAttribute("months", staticDataService.findMonthMap());
 		return "edit/education";
 	}
 
 	@RequestMapping(value = "/edit/languages", method = RequestMethod.GET)
 	public String getEditLanguages(Model model) {
-		model.addAttribute("languageForm", new LanguageForm(editProfileService.listLanguages(SecurityUtil.getCurrentProfile())));
+		model.addAttribute("languageForm", new LanguageForm(editProfileService.findLanguages(SecurityUtil.getCurrentProfile())));
 		return gotoLanguagesJSP(model);
 	}
 
@@ -236,14 +236,14 @@ public class EditProfileController {
 	}
 	
 	private String gotoLanguagesJSP(Model model){
-		model.addAttribute("languageTypes",  staticDataService.getAllLanguageTypes());
-		model.addAttribute("languageLevels", staticDataService.getAllLanguageLevels());
+		model.addAttribute("languageTypes",  staticDataService.findAllLanguageTypes());
+		model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
 		return "edit/languages";
 	}
 
 	@RequestMapping(value = "/edit/hobbies", method = RequestMethod.GET)
 	public String getEditHobbies(Model model) {
-		model.addAttribute("hobbies", editProfileService.listHobbiesWithProfileSelected(SecurityUtil.getCurrentProfile()));
+		model.addAttribute("hobbies", editProfileService.findHobbiesWithProfileSelected(SecurityUtil.getCurrentProfile()));
 		return "edit/hobbies";
 	}
 
@@ -278,7 +278,7 @@ public class EditProfileController {
 	@RequestMapping(value = "/edit/password", method = RequestMethod.POST)
 	public String saveEditPasswords(@Valid @ModelAttribute("passwordForm") PasswordForm form, BindingResult bindingResult, Model model) {
 		if(bindingResult.hasErrors()){
-			formErrorConverter.convertFormErrorToFieldError(FieldMatch.class, form, bindingResult);
+			formErrorConverter.convertToFieldError(FieldMatch.class, form, bindingResult);
 			return "password";
 		} else {
 			CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();

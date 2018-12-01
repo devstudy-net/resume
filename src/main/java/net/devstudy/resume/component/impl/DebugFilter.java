@@ -20,14 +20,6 @@ import net.devstudy.resume.util.DebugUtil;
 @Component
 public class DebugFilter extends AbstractFilter {
 
-	public boolean isEnabledDebug(){
-		return false;
-	}
-	
-	public String[] getDebugUrl(){
-		return new String[]{"/mike-ross"};
-	}
-
 	@Override
 	public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
 		try {
@@ -36,5 +28,13 @@ public class DebugFilter extends AbstractFilter {
 		} finally {
 			DebugUtil.turnOffShowMongoQuery();
 		}
+	}
+	
+	public boolean isEnabledDebug(){
+		return true;
+	}
+	
+	public String[] getDebugUrl(){
+		return new String[]{"/richard-hendricks", "/welcome"};
 	}
 }

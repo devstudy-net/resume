@@ -4,7 +4,7 @@
 <%@ taglib prefix="resume" 	tagdir="/WEB-INF/tags"%>
 
 <%@ attribute name="index"   required="true" type="java.lang.Object"%>
-<%@ attribute name="practic" required="false" type="net.devstudy.resume.entity.Practic"%>
+<%@ attribute name="practic" required="false" type="net.devstudy.resume.domain.Practic"%>
 
 <div id="ui-item-${index }" class="panel panel-default">
 	<div class="panel-body ui-item">

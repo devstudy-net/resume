@@ -1,6 +1,6 @@
 package net.devstudy.resume.form;
 
-import net.devstudy.resume.annotation.EnableFormErrorConvertation;
+import net.devstudy.resume.annotation.EnableFormErrorConversion;
 import net.devstudy.resume.annotation.constraints.FieldMatch;
 import net.devstudy.resume.annotation.constraints.PasswordStrength;
 
@@ -10,7 +10,7 @@ import net.devstudy.resume.annotation.constraints.PasswordStrength;
  * @see http://devstudy.net
  */
 @FieldMatch(first = "password", second = "confirmPassword", message = "The password fields must match")
-@EnableFormErrorConvertation(formName="passwordForm", fieldReference="confirmPassword", validationAnnotationClass=FieldMatch.class)
+@EnableFormErrorConversion(formName="passwordForm", fieldReference="confirmPassword", validationAnnotationClass=FieldMatch.class)
 public class PasswordForm {
 
 	@PasswordStrength

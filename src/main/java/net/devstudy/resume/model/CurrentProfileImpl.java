@@ -6,7 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import net.devstudy.resume.Constants;
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 
 /**
  * 

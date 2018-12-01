@@ -20,8 +20,8 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import net.devstudy.resume.component.DataBuilder;
-import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.ProfileRestore;
+import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.domain.ProfileRestore;
 import net.devstudy.resume.exception.CantCompleteClientRequestException;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;

@@ -22,9 +22,9 @@ import net.devstudy.resume.service.ImageStorageService;
  */
 @Component
 @Scope(scopeName="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UploadCertificateLinkManager implements Serializable{
+public class UploadCertificateLinkTempStorage implements Serializable{
 	private static final long serialVersionUID = -8075703850628908992L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(UploadCertificateLinkManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UploadCertificateLinkTempStorage.class);
 	@Autowired
 	private transient ImageStorageService imageStorageService;
 	

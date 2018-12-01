@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 
 /**
  * 

@@ -5,7 +5,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 
 /**
- * Adds net.devstudy.resume.component.impl.UploadImageTempStorage aspect for method annotated by this annotation
+ * Adds net.devstudy.resume.component.impl.UploadImageTempStorage around aspect for method annotated by this annotation
  * 
  * 
  * @author devstudy

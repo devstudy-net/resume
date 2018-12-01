@@ -2,7 +2,7 @@ package net.devstudy.resume.repository.storage;
 
 import org.springframework.data.repository.CrudRepository;
 
-import net.devstudy.resume.entity.ProfileRestore;
+import net.devstudy.resume.domain.ProfileRestore;
 
 /**
  * 

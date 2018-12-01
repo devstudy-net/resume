@@ -9,6 +9,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * Adds rules for conversion from form validation to field validation for display errors on UI.
+ * 
+ * For example, class net.devstudy.resume.form.PasswordForm has FieldMatch validation annotation and 
+ * EnableFormErrorConversion which convert FieldMatch form error to error for confirmPassword field.
+ * 
+ * Please look at net.devstudy.resume.component.impl.FormErrorConverterImpl component for details
  * 
  * @author devstudy
  * @see http://devstudy.net
@@ -16,7 +22,7 @@ import java.lang.annotation.Target;
 @Target({ TYPE })
 @Retention(RUNTIME)
 @Documented
-public @interface EnableFormErrorConvertation {
+public @interface EnableFormErrorConversion {
 
 	String formName();
 	
@@ -28,6 +34,6 @@ public @interface EnableFormErrorConvertation {
 	@Retention(RUNTIME)
 	@Documented
 	@interface List {
-		EnableFormErrorConvertation[] value();
+		EnableFormErrorConversion[] value();
 	}
 }

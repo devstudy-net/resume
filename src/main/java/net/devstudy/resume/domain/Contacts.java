@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 

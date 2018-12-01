@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.domain.Hobby;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.service.StaticDataService;
@@ -71,7 +71,7 @@ public class StaticDataServiceImpl implements StaticDataService {
 	}
 
 	@Override
-	public Set<Hobby> listAllHobbies() {
+	public Set<Hobby> findAllHobbies() {
 		return allHobbies;
 	}
 
@@ -87,17 +87,17 @@ public class StaticDataServiceImpl implements StaticDataService {
 	}
 
 	@Override
-	public List<Integer> listEducationYears() {
+	public List<Integer> findEducationYears() {
 		return listYears(educationYearsAgo);
 	}
 
 	@Override
-	public List<Integer> listPracticsYears() {
+	public List<Integer> findPracticsYears() {
 		return listYears(practicYearsAgo);
 	}
 	
 	@Override
-	public List<Integer> listCourcesYears() {
+	public List<Integer> findCourcesYears() {
 		return listYears(practicYearsAgo);
 	}
 
@@ -111,7 +111,7 @@ public class StaticDataServiceImpl implements StaticDataService {
 	}
 
 	@Override
-	public Map<Integer, String> mapMonths() {
+	public Map<Integer, String> findMonthMap() {
 		String[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 		Map<Integer, String> map = new LinkedHashMap<>();
 		for (int i = 0; i < months.length; i++) {
@@ -121,12 +121,12 @@ public class StaticDataServiceImpl implements StaticDataService {
 	}
 	
 	@Override
-	public Collection<LanguageType> getAllLanguageTypes() {
+	public Collection<LanguageType> findAllLanguageTypes() {
 		return EnumSet.allOf(LanguageType.class);
 	}
 	
 	@Override
-	public Collection<LanguageLevel> getAllLanguageLevels() {
+	public Collection<LanguageLevel> findAllLanguageLevels() {
 		return EnumSet.allOf(LanguageLevel.class);
 	}
 	

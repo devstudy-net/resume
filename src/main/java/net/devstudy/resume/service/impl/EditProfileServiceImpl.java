@@ -28,18 +28,18 @@ import org.springframework.web.multipart.MultipartFile;
 import net.devstudy.resume.Constants;
 import net.devstudy.resume.annotation.ProfileDataFieldGroup;
 import net.devstudy.resume.annotation.ProfileInfoField;
-import net.devstudy.resume.component.impl.UploadCertificateLinkManager;
-import net.devstudy.resume.entity.Certificate;
-import net.devstudy.resume.entity.Contacts;
-import net.devstudy.resume.entity.Course;
-import net.devstudy.resume.entity.Education;
-import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.Language;
-import net.devstudy.resume.entity.Practic;
-import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.ProfileEntity;
-import net.devstudy.resume.entity.Skill;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
+import net.devstudy.resume.domain.Certificate;
+import net.devstudy.resume.domain.Contacts;
+import net.devstudy.resume.domain.Course;
+import net.devstudy.resume.domain.Education;
+import net.devstudy.resume.domain.Hobby;
+import net.devstudy.resume.domain.Language;
+import net.devstudy.resume.domain.Practic;
+import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.domain.ProfileCollectionField;
+import net.devstudy.resume.domain.Skill;
+import net.devstudy.resume.domain.SkillCategory;
 import net.devstudy.resume.exception.CantCompleteClientRequestException;
 import net.devstudy.resume.exception.FormValidationException;
 import net.devstudy.resume.form.InfoForm;
@@ -85,7 +85,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	private NotificationManagerService notificationManagerService;
 
 	@Autowired
-	private UploadCertificateLinkManager uploadCertificateLinkManager;
+	private UploadCertificateLinkTempStorage uploadCertificateLinkManager;
 
 	@Value("${profile.hobbies.max}")
 	private int maxProfileHobbies;
@@ -307,10 +307,10 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Hobby> listHobbiesWithProfileSelected(CurrentProfile currentProfile) {
+	public List<Hobby> findHobbiesWithProfileSelected(CurrentProfile currentProfile) {
 		List<Hobby> profileHobbies = getProfile(currentProfile).getHobbies();
 		List<Hobby> hobbies = new ArrayList<>();
-		for (Hobby h : staticDataService.listAllHobbies()) {
+		for (Hobby h : staticDataService.findAllHobbies()) {
 			boolean selected = profileHobbies.contains(h);
 			hobbies.add(new Hobby(h.getName(), selected));
 		}
@@ -328,7 +328,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Language> listLanguages(CurrentProfile currentProfile) {
+	public List<Language> findLanguages(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getLanguages();
 	}
 
@@ -339,12 +339,12 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Skill> listSkills(CurrentProfile currentProfile) {
+	public List<Skill> findSkills(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getSkills();
 	}
 
 	@Override
-	public List<SkillCategory> listSkillCategories() {
+	public List<SkillCategory> findSkillCategories() {
 		return skillCategoryRepository.findAll(new Sort(SkillCategory.ORDER_FIELD_NAME));
 	}
 
@@ -356,7 +356,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	protected void populateSkillCategories(List<Skill> skills) {
-		List<SkillCategory> list = listSkillCategories();
+		List<SkillCategory> list = findSkillCategories();
 		Map<Short, String> map = convertSkillCategoryListToMap(list);
 		for (Skill skill : skills) {
 			skill.setCategory(map.get(skill.getIdCategory()));
@@ -372,7 +372,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Practic> listPractics(CurrentProfile currentProfile) {
+	public List<Practic> findPractics(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getPractics();
 	}
 
@@ -383,7 +383,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Education> listEducations(CurrentProfile currentProfile) {
+	public List<Education> findEducations(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getEducations();
 	}
 
@@ -394,14 +394,14 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Certificate> listCertificates(CurrentProfile currentProfile) {
+	public List<Certificate> findCertificates(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getCertificates();
 	}
 
 	@Override
 	@Transactional
 	public void updateCertificates(CurrentProfile currentProfile, List<Certificate> certificates) {
-		List<Certificate> loadedCertificates = listCertificates(currentProfile);
+		List<Certificate> loadedCertificates = findCertificates(currentProfile);
 		List<String> certificateImages = DataUtil.getCertificateImageUrls(loadedCertificates);
 		updateProfileEntities(currentProfile, certificates, Certificate.class);
 		for (Certificate certificate : certificates) {
@@ -422,7 +422,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 	}
 
 	@Override
-	public List<Course> listCourses(CurrentProfile currentProfile) {
+	public List<Course> findCourses(CurrentProfile currentProfile) {
 		return getProfile(currentProfile).getCourses();
 	}
 
@@ -432,7 +432,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		updateProfileEntities(currentProfile, courses, Course.class);
 	}
 
-	protected <E extends ProfileEntity> void updateProfileEntities(CurrentProfile currentProfile, List<E> updatedData, Class<E> entityClass) {
+	protected <E extends ProfileCollectionField> void updateProfileEntities(CurrentProfile currentProfile, List<E> updatedData, Class<E> entityClass) {
 		String collections = DataUtil.getCollectionName(entityClass);
 		Profile profile = getProfile(currentProfile);
 		List<E> profileData = getProfileEntities(profile, collections);
@@ -449,7 +449,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		}
 	}
 
-	protected <E extends ProfileEntity> List<E> getProfileEntities(Profile profile, String collections) {
+	protected <E extends ProfileCollectionField> List<E> getProfileEntities(Profile profile, String collections) {
 		List<E> profileData = (List<E>) DataUtil.readProperty(profile, collections);
 		if (profileData == null) {
 			profileData = Collections.EMPTY_LIST;
@@ -457,12 +457,12 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		return profileData;
 	}
 
-	protected <E extends ProfileEntity> void executeProfileEntitiesUpdate(Profile profile, List<E> updatedData, String collections) {
+	protected <E extends ProfileCollectionField> void executeProfileEntitiesUpdate(Profile profile, List<E> updatedData, String collections) {
 		DataUtil.writeProperty(profile, collections, updatedData);
 		profileRepository.save(profile);
 	}
 
-	protected <E extends ProfileEntity> void updateIndexProfileEntitiesIfTransactionSuccess(final CurrentProfile currentProfile, final List<E> updatedData, final String collections) {
+	protected <E extends ProfileCollectionField> void updateIndexProfileEntitiesIfTransactionSuccess(final CurrentProfile currentProfile, final List<E> updatedData, final String collections) {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
 			public void afterCommit() {

@@ -13,5 +13,5 @@ import org.springframework.validation.BindingResult;
  */
 public interface FormErrorConverter {
 
-	void convertFormErrorToFieldError(@Nonnull Class<? extends Annotation> validationAnnotationClass, @Nonnull Object formInstance, @Nonnull BindingResult bindingResult);
+	void convertToFieldError(@Nonnull Class<? extends Annotation> validationAnnotationClass, @Nonnull Object formInstance, @Nonnull BindingResult bindingResult);
 }

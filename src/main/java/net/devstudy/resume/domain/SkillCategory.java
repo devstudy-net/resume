@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @see http://devstudy.net
  */
 @Document(collection="skillCategory")
-public class SkillCategory extends AbstractEntity<String>{
+public class SkillCategory extends AbstractDocument<String>{
 	private static final long serialVersionUID = -8959739023562086833L;
 	public static final String ORDER_FIELD_NAME = "idCategory"; 
 	@Id

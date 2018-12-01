@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.restfb.types.User;
 
 import net.devstudy.resume.component.TranslitConverter;
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.exception.CantCompleteClientRequestException;
 import net.devstudy.resume.model.UploadResult;
 import net.devstudy.resume.service.ImageProcessorService;
@@ -49,21 +49,22 @@ public class FacebookSocialService extends AbstractCreateProfileService implemen
 
 	@Autowired
 	private NotificationManagerService notificationManagerService;
-
+	
 	@Override
-	@Transactional
-	public Profile loginOrSignup(User model) {
+	public Profile login(User model) {
 		if (StringUtils.isNotBlank(model.getEmail())) {
-			Profile p = profileRepository.findByEmail(model.getEmail());
-			if (p != null) {
+			Profile profile = profileRepository.findByEmail(model.getEmail());
+			if (profile != null) {
 				LOGGER.debug("Found profile by email={} for login via facebook request", model.getEmail());
-				return p;
+				return profile;
 			}
 		}
-		return createNewProfile(model);
+		return null;
 	}
-
-	protected Profile createNewProfile(User model) {
+	
+	@Override
+	@Transactional
+	public Profile createNewProfile(User model) {
 		String firstName = translitConverter.translit(model.getFirstName());
 		String lastName = translitConverter.translit(model.getLastName());
 		String generatedPassword = DataUtil.generateRandomString(generatePasswordAlphabet, generatePasswordLength);

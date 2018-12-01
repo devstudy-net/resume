@@ -1,7 +1,7 @@
 <%@ tag pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<%@ attribute name="profile" required="true" type="net.devstudy.resume.entity.Profile" %>
+<%@ attribute name="profile" required="true" type="net.devstudy.resume.domain.Profile" %>
 <%@ attribute name="showEdit"  required="false" type="java.lang.Boolean" %>
 
 <div class="panel panel-primary">

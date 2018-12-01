@@ -17,7 +17,7 @@ import net.devstudy.resume.component.ImageResizer;
 public class ThumbnailsImageResizer implements ImageResizer {
 
 	@Override
-	public void resizeImage(Path sourceImageFile, Path destImageFile, int width, int height) throws IOException {
+	public void resize(Path sourceImageFile, Path destImageFile, int width, int height) throws IOException {
 		Thumbnails.of(sourceImageFile.toFile()).size(width, height).toFile(destImageFile.toFile());
 	}
 }

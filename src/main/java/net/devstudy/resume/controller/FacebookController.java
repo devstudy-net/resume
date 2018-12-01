@@ -18,7 +18,7 @@ import com.restfb.scope.ScopeBuilder;
 import com.restfb.scope.UserDataPermissions;
 import com.restfb.types.User;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.service.SocialService;
 import net.devstudy.resume.util.SecurityUtil;
 
@@ -42,9 +42,9 @@ public class FacebookController {
 	private SocialService<User> facebookSocialService;
 
 	private String getAuthorizeUrl() {
-		ScopeBuilder scopeBuilder = new ScopeBuilder()
-				.addPermission(ExtendedPermissions.EMAIL).addPermission(UserDataPermissions.USER_BIRTHDAY)
-				.addPermission(UserDataPermissions.USER_HOMETOWN).addPermission(UserDataPermissions.USER_LOCATION);
+		ScopeBuilder scopeBuilder = new ScopeBuilder().addPermission(ExtendedPermissions.EMAIL)
+				.addPermission(UserDataPermissions.USER_BIRTHDAY).addPermission(UserDataPermissions.USER_HOMETOWN)
+				.addPermission(UserDataPermissions.USER_LOCATION);
 		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
 		return client.getLoginDialogUrl(idClient, redirectUrl, scopeBuilder);
 	}
@@ -60,21 +60,28 @@ public class FacebookController {
 			return "redirect:/sign-in";
 		} else {
 			User user = fetchMe(code);
-			Profile p = facebookSocialService.loginOrSignup(user);
-			if (p != null) {
-				SecurityUtil.authentificateWithRememberMe(p);
-				return "redirect:/" + p.getUid();
-			} else {
-				return "redirect:/sign-in";
-			}
+			return processFacebookUser(user);
 		}
 	}
-
+	
 	protected User fetchMe(String code) {
 		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
 		AccessToken accessToken = client.obtainUserAccessToken(idClient, secret, redirectUrl, code);
 		client = new DefaultFacebookClient(accessToken.getAccessToken(), Version.VERSION_2_6);
-		User user = client.fetchObject("me", User.class, Parameter.with("fields", "id,email,first_name,last_name,birthday,hometown,location"));
+		User user = client.fetchObject("me", User.class,
+				Parameter.with("fields", "id,email,first_name,last_name,birthday,hometown,location"));
 		return user;
+	}
+
+	protected String processFacebookUser(User user) {
+		Profile p = facebookSocialService.login(user);
+		if (p == null) {
+			p = facebookSocialService.createNewProfile(user);
+			if (p == null) {
+				return "redirect:/sign-in";
+			}
+		}
+		SecurityUtil.authentificateWithRememberMe(p);
+		return "redirect:/" + p.getUid();
 	}
 }

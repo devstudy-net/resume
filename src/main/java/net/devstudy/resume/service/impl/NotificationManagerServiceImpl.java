@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.model.NotificationMessage;
 import net.devstudy.resume.service.NotificationManagerService;
 import net.devstudy.resume.service.NotificationSenderService;
@@ -54,7 +54,7 @@ public class NotificationManagerServiceImpl implements NotificationManagerServic
 	}
 
 	protected void processNotification(Profile profile, String templateName, Object model) {
-		String destinationAddress = notificationSenderService.getDestinationAddress(profile);
+		String destinationAddress = notificationSenderService.findDestinationAddress(profile);
 		if (StringUtils.isNotBlank(destinationAddress)) {
 			NotificationMessage notificationMessage = notificationTemplateService.createNotificationMessage(templateName, model);
 			notificationMessage.setDestinationAddress(destinationAddress);

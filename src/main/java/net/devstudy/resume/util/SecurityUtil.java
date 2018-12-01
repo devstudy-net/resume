@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.model.CurrentProfileImpl;
 import net.devstudy.resume.service.impl.RememberMeService;
@@ -31,7 +32,7 @@ import net.devstudy.resume.service.impl.RememberMeService;
 @SuppressWarnings("unchecked")
 public final class SecurityUtil {
 
-	public static CurrentProfile getCurrentProfile() {
+	public static @Nullable CurrentProfile getCurrentProfile() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
 			return null;

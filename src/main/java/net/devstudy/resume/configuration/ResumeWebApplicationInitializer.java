@@ -3,6 +3,7 @@ package net.devstudy.resume.configuration;
 import java.util.EnumSet;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -61,9 +62,10 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 	}
 	
 	private void registerDebugFilterIfEnabled(ServletContext container, DebugFilter filter) {
-		if(filter.isEnabledDebug()) {
+		if(filter.isEnabledDebug() && filter.getDebugUrl().length != 0) {
+			FilterRegistration.Dynamic filterRegistration = container.addFilter(filter.getClass().getSimpleName(), filter);
 			for(String url : filter.getDebugUrl()) {
-				container.addFilter(filter.getClass().getSimpleName(), filter).addMappingForUrlPatterns(null, true, url);
+				filterRegistration.addMappingForUrlPatterns(null, true, url);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import net.devstudy.resume.entity.RememberMeToken;
+import net.devstudy.resume.domain.RememberMeToken;
 
 /**
  * 

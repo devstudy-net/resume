@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 
@@ -12,7 +12,7 @@ import net.devstudy.resume.util.DataUtil;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class Course extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity, Comparable<Course> {
+public class Course extends AbstractFinishDateDocument<Long> implements Serializable, ProfileCollectionField, Comparable<Course> {
 	private static final long serialVersionUID = 4206575925684228495L;
 
 	@EnglishLanguage(withSpechSymbols = false)

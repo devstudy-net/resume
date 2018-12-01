@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,7 +31,7 @@ import net.devstudy.resume.annotation.constraints.Phone;
  */
 @Document(indexName="profile")
 @org.springframework.data.mongodb.core.mapping.Document(collection="profile")
-public class Profile extends AbstractEntity<String> implements Serializable {
+public class Profile extends AbstractDocument<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id

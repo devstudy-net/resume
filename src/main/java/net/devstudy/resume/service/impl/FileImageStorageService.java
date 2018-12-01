@@ -26,20 +26,19 @@ public class FileImageStorageService implements ImageStorageService {
 	
 	@Value("${media.storage.root.path}")
 	protected String root;
-
+	
 	@Override
-	public String saveAndReturnImageLink(String imageName, UIImageType imageType, Path tempImageFile) {
+	public void save(String imageLink, Path tempImageFile) {
 		try {
-			String imageLink = getImageLink(imageType.getFolderName(), imageName);
 			saveImageFile(tempImageFile, getDestinationImageFile(imageLink));
-			return imageLink;
 		} catch (IOException e) {
 			throw new CantCompleteClientRequestException("Can't save image: " + e.getMessage(), e);
 		}
 	}
-
-	protected String getImageLink(String folderName, String imageName) {
-		return "/media/" + folderName + "/" + imageName;
+	
+	@Override
+	public String createImageLink(String imageName, UIImageType imageType) {
+		return "/media/" + imageType.getFolderName() + "/" + imageName;
 	}
 
 	protected Path getDestinationImageFile(String imageLink) {

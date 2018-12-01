@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import net.devstudy.resume.entity.RememberMeToken;
+import net.devstudy.resume.domain.RememberMeToken;
 
 /**
  * 

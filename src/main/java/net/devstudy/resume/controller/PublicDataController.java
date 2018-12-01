@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.devstudy.resume.annotation.constraints.FieldMatch;
 import net.devstudy.resume.component.FormErrorConverter;
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.form.SignUpForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.EditProfileService;
@@ -44,16 +44,16 @@ public class PublicDataController {
 
 	@Autowired
 	private FindProfileService findProfileService;
-	
+
 	@Autowired
 	private EditProfileService editProfileService;
-	
+
 	@Autowired
 	private FormErrorConverter formErrorConverter;
 
 	@RequestMapping(value = "/{uid}")
 	public String profile(@PathVariable String uid, Model model) {
-		Profile profile = findProfileService.findByUid(uid);		
+		Profile profile = findProfileService.findByUid(uid);
 		if (profile == null) {
 			return "profile-not-found";
 		} else if (!profile.isCompleted()) {
@@ -78,9 +78,10 @@ public class PublicDataController {
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public String searchProfiles(@RequestParam(value="query", required=false) String query, Model model, 
-			@PageableDefault(size=MAX_PROFILES_PER_PAGE) @SortDefault(sort="id") Pageable pageable) throws UnsupportedEncodingException {
-		if(StringUtils.isBlank(query)){
+	public String searchProfiles(@RequestParam(value = "query", required = false) String query, Model model,
+			@PageableDefault(size = MAX_PROFILES_PER_PAGE) @SortDefault(sort = "id") Pageable pageable)
+			throws UnsupportedEncodingException {
+		if (StringUtils.isBlank(query)) {
 			return "redirect:/welcome";
 		} else {
 			Page<Profile> profiles = findProfileService.findBySearchQuery(query, pageable);
@@ -90,13 +91,13 @@ public class PublicDataController {
 			return "search-results";
 		}
 	}
-	
+
 	@RequestMapping(value = "/fragment/more", method = RequestMethod.GET)
-	public String moreProfiles(Model model,
-			@RequestParam(value="query", required=false) String query, 
-			@PageableDefault(size=MAX_PROFILES_PER_PAGE) @SortDefault(sort="id") Pageable pageable) throws UnsupportedEncodingException {
+	public String moreProfiles(Model model, @RequestParam(value = "query", required = false) String query,
+			@PageableDefault(size = MAX_PROFILES_PER_PAGE) @SortDefault(sort = "id") Pageable pageable)
+			throws UnsupportedEncodingException {
 		Page<Profile> profiles = null;
-		if(StringUtils.isNotBlank(query)) {
+		if (StringUtils.isNotBlank(query)) {
 			profiles = findProfileService.findBySearchQuery(query, pageable);
 		} else {
 			profiles = findProfileService.findAll(pageable);
@@ -109,17 +110,17 @@ public class PublicDataController {
 	public String signIn() {
 		return "sign-in";
 	}
-	
+
 	@RequestMapping(value = "/sign-up", method = RequestMethod.GET)
 	public String signUp(Model model) {
 		model.addAttribute("profileForm", new SignUpForm());
 		return "sign-up";
 	}
-	
+
 	@RequestMapping(value = "/sign-up", method = RequestMethod.POST)
 	public String signUp(@Valid @ModelAttribute("profileForm") SignUpForm signUpForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			formErrorConverter.convertFormErrorToFieldError(FieldMatch.class, signUpForm, bindingResult);
+			formErrorConverter.convertToFieldError(FieldMatch.class, signUpForm, bindingResult);
 			return "sign-up";
 		} else {
 			Profile profile = editProfileService.createNewProfile(signUpForm);
@@ -127,7 +128,7 @@ public class PublicDataController {
 			return "redirect:/sign-up/success";
 		}
 	}
-	
+
 	@RequestMapping(value = "/sign-up/success", method = RequestMethod.GET)
 	public String signUpSuccess() {
 		return "sign-up-success";
@@ -137,7 +138,7 @@ public class PublicDataController {
 	public String error() {
 		return "error";
 	}
-	
+
 	@RequestMapping(value = "/sign-in-failed")
 	public String signInFailed(HttpSession session) {
 		if (session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION") == null) {
@@ -146,24 +147,24 @@ public class PublicDataController {
 			return "sign-in";
 		}
 	}
-	
-	@RequestMapping(value = "/restore", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/restore", method = RequestMethod.GET)
 	public String getRestoreAccess() {
 		return "restore";
 	}
-	
-	@RequestMapping(value = "/restore/success", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/restore/success", method = RequestMethod.GET)
 	public String getRestoreSuccess() {
 		return "restore-success";
 	}
-	
-	@RequestMapping(value = "/restore", method=RequestMethod.POST)
+
+	@RequestMapping(value = "/restore", method = RequestMethod.POST)
 	public String processRestoreAccess(@RequestParam("uid") String anyUnigueId) {
 		findProfileService.restoreAccess(anyUnigueId);
 		return "redirect:/restore/success";
 	}
-	
-	@RequestMapping(value = "/restore/{token}", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/restore/{token}", method = RequestMethod.GET)
 	public String restoreAccess(@PathVariable("token") String token) {
 		Profile profile = findProfileService.findByRestoreToken(token);
 		SecurityUtil.authentificate(profile);

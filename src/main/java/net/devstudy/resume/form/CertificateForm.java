@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import net.devstudy.resume.entity.Certificate;
+import net.devstudy.resume.domain.Certificate;
 
 /**
  * 

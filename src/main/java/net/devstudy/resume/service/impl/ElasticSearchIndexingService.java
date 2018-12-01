@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
 import net.devstudy.resume.service.FindProfileService;
 
@@ -24,15 +24,6 @@ public class ElasticSearchIndexingService {
 	
 	@Value("${index.all.during.startup}")
 	private boolean indexAllDuringStartup;
-	
-	@Autowired
-	private ProfileSearchRepository profileSearchRepository;
-	
-	@Autowired
-	private ElasticsearchOperations elasticsearchOperations;
-	
-	@Autowired
-	private FindProfileService findProfileService;
 	
 	@PostConstruct
 	private void postConstruct(){
@@ -51,4 +42,13 @@ public class ElasticSearchIndexingService {
 			LOGGER.info("indexAllDuringStartup is disabled");
 		}
 	}
+	
+	@Autowired
+	private ProfileSearchRepository profileSearchRepository;
+	
+	@Autowired
+	private ElasticsearchOperations elasticsearchOperations;
+	
+	@Autowired
+	private FindProfileService findProfileService;
 }

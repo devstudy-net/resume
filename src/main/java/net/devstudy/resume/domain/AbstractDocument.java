@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import net.devstudy.resume.model.AbstractModel;
  * @author devstudy
  * @see http://devstudy.net
  */
-public abstract class AbstractEntity<T> extends AbstractModel implements Serializable {
+public abstract class AbstractDocument<T> extends AbstractModel implements Serializable {
 	private static final long serialVersionUID = 8982713310863621560L;
 	
 	public abstract T getId();
@@ -34,7 +34,7 @@ public abstract class AbstractEntity<T> extends AbstractModel implements Seriali
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		AbstractEntity<T> other = (AbstractEntity<T>) obj;
+		AbstractDocument<T> other = (AbstractDocument<T>) obj;
 		if (getId() == null) {
 			if (other.getId() != null) {
 				return false;

@@ -8,13 +8,14 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
+ * Emulates TransactionSynchronization support for not transactional environment
  * 
  * @author devstudy
  * @see http://devstudy.net
  */
 @Aspect
 @Component
-public class TransactionalEmulationAspect {
+public class EmulateTransactionSynchronizationSupport {
 
 	@Around("@annotation(org.springframework.transaction.annotation.Transactional)")
 	public Object advice(ProceedingJoinPoint pjp) throws Throwable {

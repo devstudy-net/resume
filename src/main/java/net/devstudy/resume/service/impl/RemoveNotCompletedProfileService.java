@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 
 /**
@@ -25,12 +25,7 @@ import net.devstudy.resume.repository.storage.ProfileRepository;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemoveNotCompletedProfileService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemoveNotCompletedProfileService.class);
-	@Autowired
-	private ProfileRepository profileRepository;
-
-	@Value("${remove.not.completed.profiles.interval}")
-	private int removeNotCompletedProfilesInterval;
-
+	
 	@Transactional
 	@Scheduled(cron = "0 59 23 * * *")
 	public void removeNotCompletedProfiles() {
@@ -42,4 +37,10 @@ public class RemoveNotCompletedProfileService {
 		}
 		LOGGER.info("Removed {} profiles", removed);
 	}
+	
+	@Autowired
+	private ProfileRepository profileRepository;
+
+	@Value("${remove.not.completed.profiles.interval}")
+	private int removeNotCompletedProfilesInterval;
 }

@@ -2,7 +2,7 @@ package net.devstudy.resume.service;
 
 import javax.annotation.Nonnull;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 
 /**
  * 

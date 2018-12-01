@@ -14,7 +14,9 @@ import net.devstudy.resume.Constants.UIImageType;
  */
 public interface ImageStorageService {
 	
-	@Nonnull String saveAndReturnImageLink (@Nonnull String imageName, @Nonnull UIImageType imageType, @Nonnull Path tempImageFile);
+	@Nonnull String createImageLink (@Nonnull String imageName, @Nonnull UIImageType imageType);
+	
+	void save(@Nonnull String imageLink, @Nonnull Path tempImageFile);
 
 	void remove (@Nullable String ... imageLinks);
 }

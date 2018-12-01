@@ -4,7 +4,7 @@
 <%@ taglib prefix="resume"	tagdir="/WEB-INF/tags"%>
 
 <%@ attribute name="index" required="true" type="java.lang.Object"%>
-<%@ attribute name="skill" required="false" type="net.devstudy.resume.entity.Skill"%>
+<%@ attribute name="skill" required="false" type="net.devstudy.resume.domain.Skill"%>
 
 <div id="ui-item-${index }" class="row ui-item skill-item">
 	<div class="col-xs-5 col-sm-4 col-md-2 form-group">

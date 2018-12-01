@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.domain;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ import net.devstudy.resume.model.LanguageType;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class Language implements Serializable, ProfileEntity, Comparable<Language> {
+public class Language implements Serializable, ProfileCollectionField, Comparable<Language> {
 	private static final long serialVersionUID = 1L;
 
 	@JsonIgnore

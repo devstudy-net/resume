@@ -20,7 +20,7 @@ import net.devstudy.resume.component.ImageFormatConverter;
 public class PngToJpegImageFormatConverter implements ImageFormatConverter {
 
 	@Override
-	public void convertImage(Path sourceImageFile, Path destImageFile) throws IOException {
+	public void convert(Path sourceImageFile, Path destImageFile) throws IOException {
 		BufferedImage bufferedImage = null;
 		try {
 			bufferedImage = ImageIO.read(sourceImageFile.toFile());

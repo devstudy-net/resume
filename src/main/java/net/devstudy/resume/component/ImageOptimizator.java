@@ -2,6 +2,8 @@ package net.devstudy.resume.component;
 
 import java.nio.file.Path;
 
+import javax.annotation.Nonnull;
+
 /**
  * 
  * @author devstudy
@@ -9,5 +11,5 @@ import java.nio.file.Path;
  */
 public interface ImageOptimizator {
 
-	void optimize (Path image);
+	void optimize (@Nonnull Path image);
 }

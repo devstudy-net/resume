@@ -18,8 +18,8 @@ import org.springframework.util.ReflectionUtils.FieldFilter;
 
 import com.google.common.base.Objects;
 
-import net.devstudy.resume.entity.Certificate;
-import net.devstudy.resume.entity.ProfileEntity;
+import net.devstudy.resume.domain.Certificate;
+import net.devstudy.resume.domain.ProfileCollectionField;
 
 /**
  * 
@@ -72,7 +72,7 @@ public class DataUtil {
 		return res;
 	}
 	
-	public static <T extends ProfileEntity> String getCollectionName(Class<T> clazz) {
+	public static <T extends ProfileCollectionField> String getCollectionName(Class<T> clazz) {
 		String className = clazz.getSimpleName().toLowerCase();
 		if(className.endsWith("y")) {
 			className = className.substring(0, className.length()-1)+"ie";

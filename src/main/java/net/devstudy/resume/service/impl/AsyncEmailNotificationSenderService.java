@@ -16,7 +16,7 @@ import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.model.NotificationMessage;
 import net.devstudy.resume.service.NotificationSenderService;
 
@@ -49,7 +49,7 @@ public class AsyncEmailNotificationSenderService implements NotificationSenderSe
 	}
 
 	@Override
-	public String getDestinationAddress(Profile profile) {
+	public String findDestinationAddress(Profile profile) {
 		return profile.getEmail();
 	}
 	
