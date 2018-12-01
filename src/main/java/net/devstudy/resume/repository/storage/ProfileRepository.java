@@ -1,12 +1,11 @@
 package net.devstudy.resume.repository.storage;
 
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import net.devstudy.resume.entity.Profile;
 
@@ -15,7 +14,7 @@ import net.devstudy.resume.entity.Profile;
  * @author devstudy
  * @see http://devstudy.net
  */
-public interface ProfileRepository extends JpaRepository<Profile, Long> {
+public interface ProfileRepository extends PagingAndSortingRepository<Profile, String> {
 
 	Profile findByUid(String uid);
 	
@@ -29,7 +28,5 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 	
 	Page<Profile> findAllByCompletedTrue(Pageable pageable);
 	
-	@Modifying
-	@Query("delete from Profile p where p.completed=false and p.created < ?1")
-	int deleteNotCompleted(Timestamp oldDate);
+	List<Profile> findByCompletedFalseAndCreatedBefore(Date created);
 }

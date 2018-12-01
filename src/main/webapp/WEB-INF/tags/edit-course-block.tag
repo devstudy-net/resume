@@ -8,7 +8,6 @@
 <%@ attribute name="course" required="false" type="net.devstudy.resume.entity.Course"%>
 
 <div id="ui-item-${index }" class="panel panel-default">
-	<input type="hidden" name="items[${index }].id" value="${course.id }" />
 	<div class="panel-body ui-item">
 		<div class="row">
 			<div class="col-xs-12">

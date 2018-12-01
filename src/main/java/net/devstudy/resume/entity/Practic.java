@@ -3,23 +3,10 @@ package net.devstudy.resume.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
 import org.joda.time.DateTime;
+import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,48 +20,33 @@ import net.devstudy.resume.util.DataUtil;
  * @author devstudy
  * @see http://devstudy.net
  */
-@Entity
-@Table(name = "practic")
 @FirstFieldLessThanSecond(first = "beginDate", second = "finishDate")
 @EnableFormErrorConvertation(formName="practicForm", fieldReference="finishDate", validationAnnotationClass=FirstFieldLessThanSecond.class)
 public class Practic extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity, Comparable<Practic> {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@SequenceGenerator(name = "PRACTIC_ID_GENERATOR", sequenceName = "PRACTIC_SEQ", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRACTIC_ID_GENERATOR")
-	@Column(unique = true, nullable = false)
-	private Long id;
-
-	@Column(nullable = false, length = 100)
 	@SafeHtml
 	@EnglishLanguage(withSpechSymbols = false)
 	private String company;
 
-	@Column(length = 255)
 	@JsonIgnore
 	@EnglishLanguage
 	@URL
 	private String demo;
 
-	@Column(length = 255)
 	@JsonIgnore
 	@EnglishLanguage
 	@URL
 	private String src;
 
-	@Column(nullable = false, length = 100)
 	@SafeHtml
 	@EnglishLanguage(withSpechSymbols = false)
 	private String position;
 
-	@Column(nullable = false, length = 2147483647)
 	@SafeHtml
 	@EnglishLanguage(withSpechSymbols = false)
 	private String responsibilities;
 
-	@Column(name = "begin_date", nullable = false)
-	@Temporal(TemporalType.DATE)
 	@JsonIgnore
 	private Date beginDate;
 
@@ -86,21 +58,7 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 	@JsonIgnore
 	private Integer beginDateYear;
 
-	// bi-directional many-to-one association to Profile
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_profile", nullable = false)
-	@JsonIgnore
-	private Profile profile;
-
 	public Practic() {
-	}
-
-	public Long getId() {
-		return this.id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getCompany() {
@@ -143,14 +101,6 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 		this.responsibilities = responsibilities;
 	}
 
-	public Profile getProfile() {
-		return this.profile;
-	}
-
-	public void setProfile(Profile profile) {
-		this.profile = profile;
-	}
-
 	public Date getBeginDate() {
 		return beginDate;
 	}
@@ -159,7 +109,6 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 		this.beginDate = beginDate;
 	}
 
-	@Transient
 	public Integer getBeginDateMonth() {
 		if (beginDate != null) {
 			return new DateTime(beginDate).getMonthOfYear();
@@ -168,7 +117,6 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 		}
 	}
 
-	@Transient
 	public Integer getBeginDateYear() {
 		if (beginDate != null) {
 			return new DateTime(beginDate).getYear();
@@ -203,7 +151,6 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 		result = prime * result + ((company == null) ? 0 : company.hashCode());
 		result = prime * result + ((demo == null) ? 0 : demo.hashCode());
 		result = prime * result + ((getFinishDate() == null) ? 0 : getFinishDate().hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((position == null) ? 0 : position.hashCode());
 		result = prime * result + ((responsibilities == null) ? 0 : responsibilities.hashCode());
 		result = prime * result + ((src == null) ? 0 : src.hashCode());
@@ -238,11 +185,6 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 			if (other.getFinishDate() != null)
 				return false;
 		} else if (!getFinishDate().equals(other.getFinishDate()))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
 			return false;
 		if (position == null) {
 			if (other.position != null)

@@ -8,14 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,6 +29,12 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+
 import net.coobird.thumbnailator.Thumbnails;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
@@ -45,16 +46,15 @@ import net.devstudy.resume.model.LanguageType;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class TestDataDbGenerator {
+public class TestDataMongoGenerator {
 
-	// JDBC setting for database
-	private static final String JDBC_URL = "jdbc:postgresql://localhost/resume";
-	private static final String JDBC_USERNAME = "resume";
-	private static final String JDBC_PASSWORD = "password";
+	private static final String MONGO_URL = "localhost";
+	private static final int   MONGO_PORT = 27017;
+	private static final String MONGO_DB  = "resume";
 
 	private static final String PHOTO_PATH = "external/test-data/photos/";
 	private static final String CERTIFICATES_PATH = "external/test-data/certificates/";
-	private static final String MEDIA_DIR = "D:/eclipse/workspace/resume-jpa/src/main/webapp/media";
+	private static final String MEDIA_DIR = "D:/eclipse/workspace/resume-mongo/src/main/webapp/media";
 	private static final String COUTRY = "Ukraine";
 	private static final String[] CITIES = { "Kharkiv", "Kiyv", "Odessa" };
 	private static final String[] FOREGIN_LANGUAGES = { "Spanish", "French", "German", "Italian" };
@@ -84,7 +84,7 @@ public class TestDataDbGenerator {
 	}
 
 	private static final Random r = new Random();
-	private static int idProfile = 0;
+	//private static int idProfile = 0;
 	private static Date birthDay = null;
 
 	public static void main(String[] args) throws Exception {
@@ -92,17 +92,23 @@ public class TestDataDbGenerator {
 		List<Certificate> certificates = loadCertificates();
 		List<Profile> profiles = loadProfiles();
 		List<ProfileConfig> profileConfigs = getProfileConfigs();
-		try (Connection c = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD)) {
-			c.setAutoCommit(false);
-			clearDb(c);
-			Map<String, Integer> map = insertSkillCategories(c);
+		MongoClient mongo = null;
+		try {
+			mongo = new MongoClient(MONGO_URL, MONGO_PORT);
+			clearDb(mongo);
+			Map<String, Integer> map = insertSkillCategories(mongo);
 			for (Profile p : profiles) {
 				ProfileConfig profileConfig = profileConfigs.get(r.nextInt(profileConfigs.size()));
-				createProfile(c, p, profileConfig, map, certificates);
+				createProfile(mongo, p, profileConfig, map, certificates);
 				System.out.println("Created profile for " + p.firstName + " " + p.lastName);
 			}
-			c.commit();
+			createProfileIndexes(mongo);
+			createRememberMeTokenIndexes(mongo);
 			System.out.println("Data generated successful");
+		} finally {
+			if(mongo != null) {
+				mongo.close();
+			}
 		}
 	}
 
@@ -124,19 +130,15 @@ public class TestDataDbGenerator {
 		}
 		System.out.println("Media dir cleared");
 	}
+	
+	private static DB getDb(MongoClient mongo) {
+		return mongo.getDB(MONGO_DB);
+	}
 
-	private static void clearDb(Connection c) throws SQLException {
-		Statement st = c.createStatement();
-		st.executeUpdate("delete from profile");
-		st.executeUpdate("delete from skill_category");
-		st.executeQuery("select setval('profile_seq', 1, false)");
-		st.executeQuery("select setval('hobby_seq', 1, false)");
-		st.executeQuery("select setval('certificate_seq', 1, false)");
-		st.executeQuery("select setval('education_seq', 1, false)");
-		st.executeQuery("select setval('language_seq', 1, false)");
-		st.executeQuery("select setval('practic_seq', 1, false)");
-		st.executeQuery("select setval('skill_seq', 1, false)");
-		st.executeQuery("select setval('course_seq', 1, false)");
+	private static void clearDb(MongoClient mongo) throws SQLException {
+		getDb(mongo).getCollection("profile").drop();
+		getDb(mongo).getCollection("skillCategory").drop();
+		getDb(mongo).getCollection("rememberMeToken").drop();
 		System.out.println("Db cleared");
 	}
 
@@ -167,7 +169,7 @@ public class TestDataDbGenerator {
 	private static List<Certificate> loadCertificates() {
 		File[] files = new File(CERTIFICATES_PATH).listFiles();
 		if(files == null) {
-			throw new IllegalArgumentException(PHOTO_PATH+" not found");
+			throw new IllegalArgumentException(CERTIFICATES_PATH+" not found");
 		}
 		List<Certificate> list = new ArrayList<>(files.length);
 		for (File f : files) {
@@ -177,23 +179,47 @@ public class TestDataDbGenerator {
 		}
 		return list;
 	}
-
-	private static void createProfile(Connection c, Profile profile, ProfileConfig profileConfig, Map<String, Integer> map, List<Certificate> certificates) throws SQLException, IOException {
-		insertProfileData(c, profile, profileConfig);
-		// insertContacts(c, profile);
-		if (profileConfig.certificates > 0) {
-			insertCertificates(c, profileConfig.certificates, certificates);
+	
+	private static void putList(BasicDBObject p, String name, BasicDBList list) {
+		if (list != null && !list.isEmpty()) {
+			p.put(name, list);
 		}
-		insertEducation(c);
-		insertHobbies(c);
-		insertLanguages(c);
-		insertPractics(c, profileConfig);
-		insertSkills(c, map, profileConfig);
-		insertCourses(c);
 	}
 
-	private static void insertSkills(Connection c, Map<String, Integer> map, ProfileConfig profileConfig) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("insert into skill values (nextval('skill_seq'),?,?,?,?)");
+	private static void createProfile(MongoClient mongo, Profile profile, ProfileConfig profileConfig, Map<String, Integer> map, List<Certificate> certificates) throws SQLException, IOException {
+		BasicDBObject p = insertProfileData(mongo, profile, profileConfig);
+		if (profileConfig.certificates > 0) {
+			putList(p, "certificates", insertCertificates(mongo, profileConfig.certificates, certificates));
+		}
+		putList(p, "education", insertEducation(mongo));
+		putList(p, "hobbies", 	insertHobbies(mongo));
+		putList(p, "languages", insertLanguages(mongo));
+		putList(p, "practics", 	insertPractics(mongo, profileConfig));
+		putList(p, "skills", 	insertSkills(mongo, map, profileConfig));
+		putList(p, "courses", 	insertCourses(mongo));
+		getDb(mongo).getCollection("profile").insert(p);
+	}
+	
+	private static void createProfileIndexes(MongoClient mongo){
+		getDb(mongo).getCollection("profile").createIndex(new BasicDBObject("email", 1), "email_idx", true);
+		getDb(mongo).getCollection("profile").createIndex(new BasicDBObject("phone", 1), "phone_idx", true);
+		getDb(mongo).getCollection("profile").createIndex(new BasicDBObject("uid", 1), "uid_idx", true);
+		getDb(mongo).getCollection("profile").createIndex(new BasicDBObject("completed", 1), "completed_idx", false);
+		getDb(mongo).getCollection("profile").createIndex(new BasicDBObject("created", 1), "created_idx", false);
+		
+		getDb(mongo).getCollection("profileRestore").createIndex(new BasicDBObject("token", 1), "token_idx", true);
+		
+		System.out.println("Indexes created for profile collection");
+	}
+	
+	private static void createRememberMeTokenIndexes(MongoClient mongo){
+		getDb(mongo).getCollection("rememberMeToken").createIndex(new BasicDBObject("series", 1), "series_idx", true);
+		getDb(mongo).getCollection("rememberMeToken").createIndex(new BasicDBObject("username", 1), "username_idx", false);
+		System.out.println("Indexes created for rememberMeToken collection");
+	}
+
+	private static BasicDBList insertSkills(MongoClient mongo, Map<String, Integer> map, ProfileConfig profileConfig) throws SQLException {
+		BasicDBList list = new BasicDBList();
 		Map<String, Set<String>> skillMap = createSkillMap();
 		for (Course course : profileConfig.courses) {
 			for (String key : skillMap.keySet()) {
@@ -202,51 +228,41 @@ public class TestDataDbGenerator {
 		}
 		for (Map.Entry<String, Set<String>> entry : skillMap.entrySet()) {
 			if (!entry.getValue().isEmpty()) {
-				ps.setLong(1, idProfile);
-				ps.setShort(2, map.get(entry.getKey()).shortValue());
-				ps.setString(3, entry.getKey());
-				ps.setString(4, StringUtils.join(entry.getValue().toArray(), ", "));
-				ps.addBatch();
+				BasicDBObject o = new BasicDBObject();
+				o.put("idCategory", map.get(entry.getKey()));
+				o.put("category", entry.getKey());
+				o.put("value", StringUtils.join(entry.getValue().toArray(), ", "));
+				list.add(o);
 			}
 		}
-		ps.executeBatch();
-		ps.close();
+		return list;
 	}
 
-	private static void insertPractics(Connection c, ProfileConfig profileConfig) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("insert into practic values (nextval('practic_seq'),?,?,?,?,?,?,?,?)");
+	private static BasicDBList insertPractics(MongoClient mongo, ProfileConfig profileConfig) throws SQLException {
+		BasicDBList list = new BasicDBList();
 		boolean currentCourse = r.nextBoolean();
 		Date finish = addField(new Date(System.currentTimeMillis()), Calendar.MONTH, -(r.nextInt(3) + 1), false);
+		
 		for (Course course : profileConfig.courses) {
-			ps.setLong(1, idProfile);
-			ps.setString(2, course.name);
-			ps.setString(3, course.company);
+			BasicDBObject o = new BasicDBObject();
+			o.put("position", course.name);
+			o.put("company", course.company);
 			if (currentCourse) {
-				ps.setDate(4, addField(new Date(System.currentTimeMillis()), Calendar.MONTH, -1, false));
-				ps.setNull(5, Types.DATE);
+				o.put("beginDate", addField(new Date(System.currentTimeMillis()), Calendar.MONTH, -1, false));
 			} else {
-				ps.setDate(4, addField(finish, Calendar.MONTH, -1, false));
-				ps.setDate(5, finish);
+				o.put("beginDate", addField(finish, Calendar.MONTH, -1, false));
+				o.put("finishDate", finish);
 				finish = addField(finish, Calendar.MONTH, -(r.nextInt(3) + 1), false);
 			}
-			ps.setString(6, course.responsibilities);
-			if (course.demo == null) {
-				ps.setNull(7, Types.VARCHAR);
-			} else {
-				ps.setString(7, course.demo);
-			}
-			if (course.github == null) {
-				ps.setNull(8, Types.VARCHAR);
-			} else {
-				ps.setString(8, course.github);
-			}
-			ps.addBatch();
+			o.put("responsibilities", course.responsibilities);
+			o.put("demo", course.demo);
+			o.put("github", course.github);
+			list.add(o);
 		}
-		ps.executeBatch();
-		ps.close();
+		return list;
 	}
 
-	private static void insertLanguages(Connection c) throws SQLException {
+	private static BasicDBList insertLanguages(MongoClient mongo) throws SQLException {
 		List<String> languages = new ArrayList<>();
 		languages.add("English");
 		if (r.nextBoolean()) {
@@ -257,60 +273,56 @@ public class TestDataDbGenerator {
 				languages.add(otherLng.remove(0));
 			}
 		}
-		PreparedStatement ps = c.prepareStatement("insert into language values (nextval('language_seq'),?,?,?,?)");
+		BasicDBList list = new BasicDBList();
+		
 		for (String language : languages) {
 			LanguageType langType = languageTypes.get(r.nextInt(languageTypes.size()));
 			LanguageLevel langLevel = languageLevels.get(r.nextInt(languageLevels.size()));
-			ps.setLong(1, idProfile);
-			ps.setString(2, language);
-			ps.setString(3, langLevel.getDbValue());
-			ps.setString(4, langType.getDbValue());
-			ps.addBatch();
+			BasicDBObject o = new BasicDBObject();
+			
+			o.put("name", language);
+			o.put("level", langLevel.getDbValue());
+			o.put("type", langType.getDbValue());
+			list.add(o);
 			if (langType != LanguageType.ALL) {
-				ps.setLong(1, idProfile);
-				ps.setString(2, language);
+				o = new BasicDBObject();
+				o.put("name", language);
 				LanguageLevel newLangLevel = languageLevels.get(r.nextInt(languageLevels.size()));
 				while (newLangLevel == langLevel) {
 					newLangLevel = languageLevels.get(r.nextInt(languageLevels.size()));
 				}
-				ps.setString(3, langLevel.getDbValue());
-				ps.setString(4, langType.getReverseType().getDbValue());
-				ps.addBatch();
+				o.put("level", langLevel.getDbValue());
+				o.put("type", langType.getReverseType().getDbValue());
+				list.add(o);
 			}
 		}
-		ps.executeBatch();
-		ps.close();
+		return list;
 	}
 
-	private static void insertHobbies(Connection c) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("insert into hobby values (nextval('hobby_seq'),?,?)");
+	private static BasicDBList insertHobbies(MongoClient mongo) throws SQLException {
+		BasicDBList list = new BasicDBList();
 		List<String> hobbies = new ArrayList<>(Arrays.asList(HOBBIES));
 		Collections.shuffle(hobbies);
 		for (int i = 0; i < 5; i++) {
-			ps.setLong(1, idProfile);
-			ps.setString(2, hobbies.remove(0));
-			ps.addBatch();
+			list.add(new BasicDBObject("name", hobbies.remove(0)));
 		}
-		ps.executeBatch();
-		ps.close();
+		return list;
 	}
 
-	private static void insertEducation(Connection c) throws SQLException {
-		PreparedStatement ps = c.prepareStatement("insert into education values (nextval('education_seq'),?,?,?,?,?,?)");
-		ps.setLong(1, idProfile);
-		ps.setString(2, "The specialist degree in Electronic Engineering");
+	private static BasicDBList insertEducation(MongoClient mongo) throws SQLException {
+		BasicDBList list = new BasicDBList();
+		BasicDBObject o = new BasicDBObject();
+		o.put("summary", "The specialist degree in Electronic Engineering");
 		Date finish = randomFinishEducation();
 		Date begin = addField(finish, Calendar.YEAR, -5, true);
-		ps.setInt(3, new DateTime(begin).getYear());
-		if (finish.getTime() > System.currentTimeMillis()) {
-			ps.setNull(4, Types.INTEGER);
-		} else {
-			ps.setInt(4, new DateTime(finish).getYear());
-		}
-		ps.setString(5, "Kharkiv National Technical University, Ukraine");
-		ps.setString(6, "Computer Science");
-		ps.executeUpdate();
-		ps.close();
+		o.put("beginYear", new DateTime(begin).getYear());
+		if (finish.getTime() <= System.currentTimeMillis()) {
+			o.put("finishYear", new DateTime(finish).getYear());
+		} 
+		o.put("university", "Kharkiv National Technical University, Ukraine");
+		o.put("faculty", "Computer Science");
+		list.add(o);
+		return list;
 	}
 
 	private static Date addField(Date finish, int field, int value, boolean isBeginEducation) {
@@ -334,45 +346,42 @@ public class TestDataDbGenerator {
 		return new Date(cl.getTimeInMillis());
 	}
 
-	private static void insertCourses(Connection c) throws SQLException {
+	private static BasicDBList insertCourses(MongoClient mongo) throws SQLException {
 		if (r.nextBoolean()) {
-			PreparedStatement ps = c.prepareStatement("insert into course values (nextval('course_seq'),?,?,?,?)");
-			ps.setLong(1, idProfile);
-			ps.setString(2, "Java Advanced Course");
-			ps.setString(3, "DevStudy.Net");
+			BasicDBList list = new BasicDBList();
+			BasicDBObject o = new BasicDBObject();
+			o.put("name", "Java Advanced Course");
+			o.put("school", "SourceIt");
 			Date finish = randomFinishEducation();
-			if (finish.getTime() > System.currentTimeMillis()) {
-				ps.setNull(4, Types.DATE);
-			} else {
-				ps.setDate(4, finish);
+			if (finish.getTime() <= System.currentTimeMillis()) {
+				o.put("finish_date", finish);
 			}
-			ps.executeUpdate();
-			ps.close();
+			list.add(o);
+			return list;
 		}
+		return null;
 	}
 
-	private static void insertCertificates(Connection c, int certificatesCount, List<Certificate> certificates) throws SQLException, IOException {
+	private static BasicDBList insertCertificates(MongoClient mongo, int certificatesCount, List<Certificate> certificates) throws SQLException, IOException {
 		Collections.shuffle(certificates);
-		PreparedStatement ps = c.prepareStatement("insert into certificate values (nextval('certificate_seq'),?,?,?,?)");
+		BasicDBList list = new BasicDBList();
 		for (int i = 0; i < certificatesCount && i < certificates.size(); i++) {
 			Certificate certificate = certificates.get(i);
-			ps.setLong(1, idProfile);
-			ps.setString(2, certificate.name);
+			BasicDBObject o = new BasicDBObject();
+			o.put("name", certificate.name);
 			String uid = UUID.randomUUID().toString() + ".jpg";
 			File photo = new File(MEDIA_DIR + "/certificates/" + uid);
 			if (!photo.getParentFile().exists()) {
 				photo.getParentFile().mkdirs();
 			}
 			Files.copy(Paths.get(certificate.largeImg), Paths.get(photo.getAbsolutePath()));
-			ps.setString(3, "/media/certificates/" + uid);
+			o.put("largeUrl","/media/certificates/" + uid);
 			String smallUid = uid.replace(".jpg", "-sm.jpg");
 			Thumbnails.of(photo).size(100, 100).toFile(photo.getAbsolutePath().replace(".jpg", "-sm.jpg"));
-			ps.setString(4, "/media/certificates/" + smallUid);
-			ps.addBatch();
+			o.put("smallUrl","/media/certificates/" + smallUid);
+			list.add(o);
 		}
-
-		ps.executeBatch();
-		ps.close();
+		return list;
 	}
 
 	private static String getInfo() {
@@ -384,100 +393,77 @@ public class TestDataDbGenerator {
 		return StringUtils.join(SENTENCES.subList(startIndex, endIndex), " ");
 	}
 
-	private static void insertProfileData(Connection c, Profile profile, ProfileConfig profileConfig) throws SQLException, IOException {
-		PreparedStatement ps = c.prepareStatement("insert into profile values (nextval('profile_seq'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,true,?,?,?,?,?,?,?)");
-		idProfile++;
-		ps.setString(1, (profile.firstName + "-" + profile.lastName).toLowerCase());
-		ps.setString(2, profile.firstName);
-		ps.setString(3, profile.lastName);
+	private static BasicDBObject insertProfileData(MongoClient mongo, Profile profile, ProfileConfig profileConfig) throws SQLException, IOException {
+		BasicDBObject p = new BasicDBObject();
+		p.put("uid", (profile.firstName + "-" + profile.lastName).toLowerCase());
+		p.put("firstName", profile.firstName);
+		p.put("lastName", profile.lastName);
 		birthDay = randomBirthDate();
-		ps.setDate(4, birthDay);
-		ps.setString(5, generateUniquePhone(idProfile));
-		ps.setString(6, (profile.firstName + "-" + profile.lastName).toLowerCase() + "@gmail.com");
-		ps.setString(7, COUTRY);
-		ps.setString(8, CITIES[r.nextInt(CITIES.length)]);
-		ps.setString(9, profileConfig.objective);
-		ps.setString(10, profileConfig.summary);
-
+		p.put("birthDay", birthDay);
+		p.put("phone", generatePhone());
+		p.put("email", (profile.firstName + "-" + profile.lastName).toLowerCase() + "@gmail.com");
+		p.put("country", COUTRY);
+		p.put("city", CITIES[r.nextInt(CITIES.length)]);
+		p.put("objective", profileConfig.objective);
+		p.put("summary", profileConfig.summary);
 		String uid = UUID.randomUUID().toString() + ".jpg";
 		File photo = new File(MEDIA_DIR + "/avatars/" + uid);
 		if (!photo.getParentFile().exists()) {
 			photo.getParentFile().mkdirs();
 		}
 		Files.copy(Paths.get(profile.photo), Paths.get(photo.getAbsolutePath()));
-
-		ps.setString(11, "/media/avatars/" + uid);
-
+		p.put("largePhoto", "/media/avatars/" + uid);
 		String smallUid = uid.replace(".jpg", "-sm.jpg");
 		Thumbnails.of(photo).size(110, 110).toFile(new File(MEDIA_DIR + "/avatars/" + smallUid));
-
-		ps.setString(12, "/media/avatars/" + smallUid);
+		p.put("smallPhoto", "/media/avatars/" + smallUid);
 		if (r.nextBoolean()) {
-			ps.setString(13, getInfo());
-		} else {
-			ps.setNull(13, Types.VARCHAR);
+			p.put("info", getInfo());
 		}
-		ps.setString(14, PASSWORD_HASH);
-
-		ps.setTimestamp(15, new Timestamp(System.currentTimeMillis()));
-
+		p.put("password", PASSWORD_HASH);
+		p.put("created", new Timestamp(System.currentTimeMillis()));
+		BasicDBObject contacts = new BasicDBObject();
+		p.put("contacts", contacts);
 		if (r.nextBoolean()) {
-			ps.setString(16, (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(16, Types.VARCHAR);
+			contacts.put("skype", (profile.firstName + "-" + profile.lastName).toLowerCase());
 		}
 		if (r.nextBoolean()) {
-			ps.setString(17, "https://vk.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(17, Types.VARCHAR);
-		}
+			contacts.put("vkontakte", "https://vk.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
+		} 
 		if (r.nextBoolean()) {
-			ps.setString(18, "https://facebook.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(18, Types.VARCHAR);
-		}
+			contacts.put("facebook", "https://facebook.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
+		} 
 		if (r.nextBoolean()) {
-			ps.setString(19, "https://linkedin.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(19, Types.VARCHAR);
-		}
+			contacts.put("linkedin", "https://linkedin.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
+		} 
 		if (r.nextBoolean()) {
-			ps.setString(20, "https://github.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(20, Types.VARCHAR);
-		}
+			contacts.put("github", "https://github.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
+		} 
 		if (r.nextBoolean()) {
-			ps.setString(21, "https://stackoverflow.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
-		} else {
-			ps.setNull(21, Types.VARCHAR);
-		}
-
-		ps.executeUpdate();
-		ps.close();
-		
+			contacts.put("stackoverflow", "https://stackoverflow.com/" + (profile.firstName + "-" + profile.lastName).toLowerCase());
+		} 
+		//idProfile++;
+		p.put("completed", Boolean.TRUE);
+		return p;
 	}
 
-	private static Map<String, Integer> insertSkillCategories(Connection c) throws SQLException {
+	private static Map<String, Integer> insertSkillCategories(MongoClient mongo) throws SQLException {
+		Map<String, Set<String>> categories = createSkillMap();
+		DBCollection collection = getDb(mongo).getCollection("skillCategory");
 		int id = 1;
 		Map<String, Integer> map = new HashMap<>();
-		Map<String, Set<String>> categories = createSkillMap();
-		PreparedStatement ps = c.prepareStatement("insert into skill_category values (?,?)");
 		for (String category : categories.keySet()) {
+			BasicDBObject document = new BasicDBObject();
 			map.put(category, id);
-			ps.setLong(1, id++);
-			ps.setString(2, category);
-			ps.addBatch();
+			document.put("idCategory", id++);
+			document.put("category", category);
+			collection.insert(document);
 		}
-		ps.executeBatch();
-		ps.close();
 		return map;
 	}
 
-	private static String generateUniquePhone(int idProfile) {
-		String idProfileStr = String.valueOf(idProfile);
-		String[] operators = {"+38050", "+38066", "+38095", "+38063", "+38093", "+38073", "+38067", "+38096"};
-		StringBuilder phone = new StringBuilder(operators[r.nextInt(operators.length)] + idProfileStr);
-		for (int i = 0; i < 7 - idProfileStr.length(); i++) {
+	private static String generatePhone() {
+		StringBuilder phone = new StringBuilder("+38050");
+		for (int i = 0; i < 7; i++) {
 			int code = '1' + r.nextInt(9);
 			phone.append(((char) code));
 		}

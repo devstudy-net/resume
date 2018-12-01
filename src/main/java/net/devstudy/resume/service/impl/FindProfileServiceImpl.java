@@ -6,7 +6,6 @@ import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import net.devstudy.resume.exception.CantCompleteClientRequestException;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.ProfileRestoreRepository;
-import net.devstudy.resume.service.CacheService;
 import net.devstudy.resume.service.FindProfileService;
 import net.devstudy.resume.service.NotificationManagerService;
 import net.devstudy.resume.util.SecurityUtil;
@@ -54,9 +52,6 @@ public class FindProfileServiceImpl implements FindProfileService {
 	private NotificationManagerService notificationManagerService;
 	
 	@Autowired
-	private CacheService cacheService;
-	
-	@Autowired
 	protected DataBuilder dataBuilder;
 
 	@Value("${application.host}")
@@ -64,7 +59,7 @@ public class FindProfileServiceImpl implements FindProfileService {
 
 	@Override
 	public Profile findByUid(String uid) {
-		return cacheService.findProfileByUid(uid.toLowerCase());
+		return profileRepository.findByUid(uid.toLowerCase());
 	}
 
 	@Override
@@ -101,10 +96,10 @@ public class FindProfileServiceImpl implements FindProfileService {
 	public void restoreAccess(String anyUnigueId) {
 		Profile profile = profileRepository.findByUidOrEmailOrPhone(anyUnigueId, anyUnigueId, anyUnigueId);
 		if (profile != null) {
-			ProfileRestore restore = profileRestoreRepository.findOne(profile.getId());
+			ProfileRestore restore = profileRestoreRepository.findByProfileId(profile.getId());
 			if (restore == null) {
 				restore = new ProfileRestore();
-				restore.setId(profile.getId());
+				restore.setProfile(profile);
 			}
 			restore.setToken(SecurityUtil.generateNewRestoreAccessToken());
 			profileRestoreRepository.save(restore);
@@ -138,15 +133,6 @@ public class FindProfileServiceImpl implements FindProfileService {
 	@Override
 	@Transactional
 	public Iterable<Profile> findAllForIndexing() {
-		Iterable<Profile> all = profileRepository.findAll();
-		//Load lazy collections
-		for(Profile p : all) {
-			Hibernate.initialize(p.getSkills());
-			Hibernate.initialize(p.getCertificates());
-			Hibernate.initialize(p.getLanguages());
-			Hibernate.initialize(p.getPractics());
-			Hibernate.initialize(p.getCourses());
-		}
-		return all;
+		return profileRepository.findAll();
 	}
 }

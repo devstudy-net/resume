@@ -15,7 +15,7 @@ import net.devstudy.resume.entity.Profile;
  */
 public class CurrentProfileImpl extends User implements CurrentProfile {
 	private static final long serialVersionUID = 3850489832510630519L;
-	private final Long id;
+	private final String id;
 	private final String fullName;
 
 	public CurrentProfileImpl(Profile profile) {
@@ -26,7 +26,7 @@ public class CurrentProfileImpl extends User implements CurrentProfile {
 	}
 
 	@Override
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 	

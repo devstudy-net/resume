@@ -4,19 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -24,7 +11,9 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,26 +29,19 @@ import net.devstudy.resume.annotation.constraints.Phone;
  * @author devstudy
  * @see http://devstudy.net
  */
-@Entity
-@Table(name = "profile")
 @Document(indexName="profile")
-public class Profile extends AbstractEntity<Long> implements Serializable {
+@org.springframework.data.mongodb.core.mapping.Document(collection="profile")
+public class Profile extends AbstractEntity<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name = "PROFILE_ID_GENERATOR", sequenceName = "PROFILE_SEQ", allocationSize=1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROFILE_ID_GENERATOR")
-	@Column(unique = true, nullable = false)
-	private Long id;
+	private String id;
 
-	@Column(name = "birth_day")
-	@Temporal(TemporalType.DATE)
 	@ProfileDataFieldGroup
 	@Adulthood
 	@NotNull
 	private Date birthDay;
 
-	@Column
 	@ProfileDataFieldGroup
 	@Size(max=100)
 	@NotNull
@@ -67,7 +49,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 	@EnglishLanguage(withNumbers=false, withSpechSymbols=false)
 	private String city;
 
-	@Column
 	@ProfileDataFieldGroup
 	@Size(max=60)
 	@NotNull
@@ -75,112 +56,89 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 	@EnglishLanguage(withNumbers=false, withSpechSymbols=false)
 	private String country;
 
-	@Column(name = "first_name", nullable = false, length = 50)
 	private String firstName;
 
-	@Column(name = "last_name", nullable = false, length = 50)
 	private String lastName;
 
-	@Column(length = 2147483647)
 	@ProfileDataFieldGroup
 	@NotNull
 	@SafeHtml
 	@EnglishLanguage
 	private String objective;
 
-	@Column(name = "large_photo", length = 255)
 	@JsonIgnore
 	@Size(max=255)
 	private String largePhoto;
 
-	@Column(name = "small_photo", length = 255)
 	@Size(max=255)
 	private String smallPhoto;
 
-	@Column(length = 20)
 	@JsonIgnore
 	@ProfileDataFieldGroup
 	@NotNull
 	@Size(max=20)
 	@Phone
+	@Indexed(unique=true)
 	private String phone;
 
-	@Column(length = 100)
 	@JsonIgnore
 	@ProfileDataFieldGroup
 	@NotNull
 	@Size(max=100)
 	@Email
 	@EnglishLanguage
+	@Indexed(unique=true)
 	private String email;
 	
-	@Column
 	@ProfileInfoField
 	private String info;
 
-	@Column(length = 2147483647)
 	@ProfileDataFieldGroup
 	@NotNull
 	@SafeHtml
 	@EnglishLanguage
 	private String summary;
 
-	@Column(nullable = false, length = 100)
+	@Indexed(unique=true)
 	private String uid;
 	
-	@Column(nullable = false, length = 100)
 	@JsonIgnore
 	private String password;
 	
-	@Column(nullable = false)
 	@JsonIgnore
+	@Indexed
 	private boolean completed;
 	
-	@Column(insertable=false)
-	@Temporal(TemporalType.TIMESTAMP)
+	@Indexed
 	private Date created;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
 	private List<Certificate> certificates;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC") //finishYear DESC, beginYear DESC, 
 	@JsonIgnore
 	private List<Education> educations;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC")
 	@JsonIgnore
 	private List<Hobby> hobbies;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC")
 	private List<Language> languages;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC")
 	private List<Practic> practics;
 
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC")
 	private List<Skill> skills;
 	
-	@OneToMany(mappedBy = "profile"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST}*/)
-	@OrderBy("id ASC")
 	private List<Course> courses;
 	
 	@JsonIgnore
-	@Embedded
 	private Contacts contacts;
 
 	public Profile() {
 	}
 
-	public Long getId() {
+	public String getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -254,7 +212,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setCertificates(List<Certificate> certificates) {
 		this.certificates = certificates;
-		//updateListSetProfile(this.certificates);
 	}
 
 	public List<Education> getEducations() {
@@ -263,7 +220,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setEducations(List<Education> educations) {
 		this.educations = educations;
-		//updateListSetProfile(this.educations);
 	}
 
 	public List<Hobby> getHobbies() {
@@ -272,7 +228,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setHobbies(List<Hobby> hobbies) {
 		this.hobbies = hobbies;
-		//updateListSetProfile(this.hobbies);
 	}
 
 	public List<Language> getLanguages() {
@@ -281,7 +236,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setLanguages(List<Language> languages) {
 		this.languages = languages;
-		//updateListSetProfile(this.languages);
 	}
 
 	public List<Practic> getPractics() {
@@ -290,7 +244,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setPractics(List<Practic> practics) {
 		this.practics = practics;
-		//updateListSetProfile(this.practics);
 	}
 
 	public List<Skill> getSkills() {
@@ -299,7 +252,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setSkills(List<Skill> skills) {
 		this.skills = skills;
-		//updateListSetProfile(this.skills);
 	}
 
 	public List<Course> getCourses() {
@@ -308,7 +260,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 
 	public void setCourses(List<Course> courses) {
 		this.courses = courses;
-		//updateListSetProfile(this.courses);
 	}
 
 	public String getLargePhoto() {
@@ -367,12 +318,10 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 		this.created = created;
 	}
 
-	@Transient
 	public String getFullName() {
 		return firstName + " " + lastName;
 	}
 	
-	@Transient
 	public int getAge(){
 		LocalDate birthdate = new LocalDate (birthDay);
 		LocalDate now = new LocalDate();
@@ -380,7 +329,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 		return age.getYears();
 	}
 	
-	@Transient
 	public String getProfilePhoto(){
 		if(largePhoto != null) {
 			return largePhoto;
@@ -402,7 +350,6 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 		this.info = info;
 	}
 
-	// https://hibernate.atlassian.net/browse/HHH-7610
 	public Contacts getContacts() {
 		if(contacts == null) {
 			contacts = new Contacts();
@@ -413,12 +360,4 @@ public class Profile extends AbstractEntity<Long> implements Serializable {
 	public void setContacts(Contacts contacts) {
 		this.contacts = contacts;
 	}
-	
-	/*private void updateListSetProfile(List<? extends ProfileEntity> list) {
-		if(list != null) {
-			for(ProfileEntity entity : list) {
-				entity.setProfile(this);
-			}
-		}
-	}*/
 }

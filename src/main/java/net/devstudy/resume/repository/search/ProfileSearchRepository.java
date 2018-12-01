@@ -11,7 +11,7 @@ import net.devstudy.resume.entity.Profile;
  * @author devstudy
  * @see http://devstudy.net
  */
-public interface ProfileSearchRepository extends ElasticsearchRepository<Profile, Long> {
+public interface ProfileSearchRepository extends ElasticsearchRepository<Profile, String> {
 
 	/**
 	 * 

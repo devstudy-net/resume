@@ -21,22 +21,20 @@ import net.devstudy.resume.util.DebugUtil;
 public class DebugFilter extends AbstractFilter {
 
 	public boolean isEnabledDebug(){
-		return true;
+		return false;
 	}
 	
 	public String[] getDebugUrl(){
-		return new String[]{"/richard-hendricks", "/welcome"};
+		return new String[]{"/mike-ross"};
 	}
 
 	@Override
 	public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
 		try {
-			LOGGER.info("**************************************************** start ***************************************************");
-			DebugUtil.turnOnShowSQL();
+			DebugUtil.turnOnShowMongoQuery();
 			chain.doFilter(req, resp);
 		} finally {
-			DebugUtil.turnOffShowSQL();
-			LOGGER.info("****************************************************  end  ***************************************************");
+			DebugUtil.turnOffShowMongoQuery();
 		}
 	}
 }

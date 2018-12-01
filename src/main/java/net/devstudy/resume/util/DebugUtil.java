@@ -11,17 +11,13 @@ import ch.qos.logback.classic.Logger;
  * @see http://devstudy.net
  */
 public class DebugUtil {
-	public static void turnOnShowSQL() {
-		Logger sqlLogger = (Logger) LoggerFactory.getLogger("org.hibernate.SQL");
+	public static void turnOnShowMongoQuery() {
+		Logger sqlLogger = (Logger) LoggerFactory.getLogger("org.springframework.data.mongodb.core.MongoTemplate");
 		sqlLogger.setLevel(Level.DEBUG);
-		Logger descLogger = (Logger) LoggerFactory.getLogger("org.hibernate.type.descriptor.sql.BasicBinder");
-		descLogger.setLevel(Level.TRACE);
 	}
 
-	public static void turnOffShowSQL() {
-		Logger sqlLogger = (Logger) LoggerFactory.getLogger("org.hibernate.SQL");
+	public static void turnOffShowMongoQuery() {
+		Logger sqlLogger = (Logger) LoggerFactory.getLogger("org.springframework.data.mongodb.core.MongoTemplate");
 		sqlLogger.setLevel(Level.INFO);
-		Logger descLogger = (Logger) LoggerFactory.getLogger("org.hibernate.type.descriptor.sql.BasicBinder");
-		descLogger.setLevel(Level.INFO);
 	}
 }

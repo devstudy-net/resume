@@ -2,9 +2,6 @@ package net.devstudy.resume.model;
 
 import java.beans.PropertyEditorSupport;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import net.devstudy.resume.util.DataUtil;
 
 /**
@@ -47,17 +44,5 @@ public enum LanguageLevel {
 				setValue(LanguageLevel.values()[Integer.parseInt(sliderIntValue)]);
 			}
 		};
-	}
-	
-	@Converter
-	public static class PersistJPAConverter implements AttributeConverter<LanguageLevel, String> {
-		@Override
-		public String convertToDatabaseColumn(LanguageLevel attribute) {
-			return attribute.getDbValue();
-		}
-		@Override
-		public LanguageLevel convertToEntityAttribute(String dbValue) {
-			return LanguageLevel.valueOf(dbValue.toUpperCase());
-		}
 	}
 }

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.service.StaticDataService;
@@ -145,17 +144,7 @@ public class StaticDataServiceImpl implements StaticDataService {
 		}
 
 		@Override
-		public void setId(Long id) {
-			throw new UnsupportedOperationException("This hobby instance is readonly instance!");
-		}
-
-		@Override
 		public void setName(String name) {
-			throw new UnsupportedOperationException("This hobby instance is readonly instance!");
-		}
-
-		@Override
-		public void setProfile(Profile profile) {
 			throw new UnsupportedOperationException("This hobby instance is readonly instance!");
 		}
 

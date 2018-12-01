@@ -1,6 +1,6 @@
 package net.devstudy.resume.service.impl;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 
 /**
@@ -34,7 +35,11 @@ public class RemoveNotCompletedProfileService {
 	@Scheduled(cron = "0 59 23 * * *")
 	public void removeNotCompletedProfiles() {
 		DateTime date = DateTime.now().minusDays(removeNotCompletedProfilesInterval);
-		int removed = profileRepository.deleteNotCompleted(new Timestamp(date.getMillis()));
+		int removed = 0;
+		for(Profile profile : profileRepository.findByCompletedFalseAndCreatedBefore(new Date(date.getMillis()))) {
+			profileRepository.delete(profile);
+			removed++;
+		}
 		LOGGER.info("Removed {} profiles", removed);
 	}
 }

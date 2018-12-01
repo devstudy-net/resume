@@ -66,7 +66,7 @@ public class EditProfileController {
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
-		binder.registerCustomEditor(Date.class,			new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));	
+		binder.registerCustomEditor(Date.class,			new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
 		binder.registerCustomEditor(String.class,		new StringTrimmerEditor(true));
 		binder.registerCustomEditor(LanguageType.class, LanguageType.getPropertyEditor());
 		binder.registerCustomEditor(LanguageLevel.class,LanguageLevel.getPropertyEditor());

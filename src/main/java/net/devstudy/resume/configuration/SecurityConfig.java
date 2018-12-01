@@ -1,7 +1,5 @@
 package net.devstudy.resume.configuration;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,10 +10,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import net.devstudy.resume.Constants;
+import net.devstudy.resume.repository.storage.MongoPersistentTokenRepositoryAdapter;
+import net.devstudy.resume.repository.storage.RememberMeTokenRepository;
 import net.devstudy.resume.service.impl.RememberMeService;
 
 /**
@@ -30,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private UserDetailsService userDetailsService;
 	
 	@Autowired
-	private DataSource dataSource;
+	private RememberMeTokenRepository rememberMeTokenRepository;
 	
 	@Autowired
 	private RememberMeService persistentTokenRememberMeService;
@@ -63,9 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public PersistentTokenRepository persistentTokenRepository(){
-		JdbcTokenRepositoryImpl persistentTokenRepository = new JdbcTokenRepositoryImpl();
-		persistentTokenRepository.setDataSource(dataSource);
-		return persistentTokenRepository;
+		return new MongoPersistentTokenRepositoryAdapter(rememberMeTokenRepository);
 	}
 	
 	@Bean

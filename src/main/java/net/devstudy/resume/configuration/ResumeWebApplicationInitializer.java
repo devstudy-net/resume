@@ -3,7 +3,6 @@ package net.devstudy.resume.configuration;
 import java.util.EnumSet;
 
 import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -12,7 +11,6 @@ import javax.servlet.SessionTrackingMode;
 import org.sitemesh.builder.SiteMeshFilterBuilder;
 import org.sitemesh.config.ConfigurableSiteMeshFilter;
 import org.sitemesh.content.tagrules.html.Sm2TagRuleBundle;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -56,7 +54,6 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 	private void registerFilters(ServletContext container, WebApplicationContext ctx) {
 		registerFilter(container, ctx.getBean(ErrorHandler.class));
 		registerFilter(container, new CharacterEncodingFilter("UTF-8", true));
-		registerFilter(container, new OpenEntityManagerInViewFilter());
 		registerFilter(container, new RequestContextFilter());
 		registerDebugFilterIfEnabled(container, ctx.getBean(DebugFilter.class));
 		registerFilter(container, new DelegatingFilterProxy("springSecurityFilterChain", ctx), "springSecurityFilterChain");
@@ -64,10 +61,9 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 	}
 	
 	private void registerDebugFilterIfEnabled(ServletContext container, DebugFilter filter) {
-		if(filter.isEnabledDebug() && filter.getDebugUrl().length != 0) {
-			FilterRegistration.Dynamic filterRegistration = container.addFilter(filter.getClass().getSimpleName(), filter);
+		if(filter.isEnabledDebug()) {
 			for(String url : filter.getDebugUrl()) {
-				filterRegistration.addMappingForUrlPatterns(null, true, url);
+				container.addFilter(filter.getClass().getSimpleName(), filter).addMappingForUrlPatterns(null, true, url);
 			}
 		}
 	}

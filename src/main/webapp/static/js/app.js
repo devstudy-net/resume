@@ -136,6 +136,7 @@ var resume = {
 			};
 			container.append(template(context));
 
+			resume.createDatePicker();
 			container.find('input.level-slider').slider();
 		},
 		

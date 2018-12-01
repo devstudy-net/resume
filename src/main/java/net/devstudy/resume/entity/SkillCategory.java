@@ -1,26 +1,22 @@
 package net.devstudy.resume.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 
  * @author devstudy
  * @see http://devstudy.net
  */
-@Entity
-@Table(name="skill_category")
-public class SkillCategory extends AbstractEntity<Short>{
+@Document(collection="skillCategory")
+public class SkillCategory extends AbstractEntity<String>{
 	private static final long serialVersionUID = -8959739023562086833L;
-	public static final String ORDER_FIELD_NAME = "id"; 
+	public static final String ORDER_FIELD_NAME = "idCategory"; 
 	@Id
-	@Column
-	private Short id;
+	private String id;
 	
-	@Column(nullable=false, length=50)
+	private Short idCategory;
+	
 	private String category;	
 	
 	public SkillCategory() {
@@ -32,17 +28,20 @@ public class SkillCategory extends AbstractEntity<Short>{
 		this.category = category;
 	}
 
-	public Short getId() {
+	public String getId() {
 		return id;
 	}
-	
-	@Transient
-	public Short getIdCategory(){
-		return getId();
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public void setId(Short id) {
-		this.id = id;
+	public Short getIdCategory() {
+		return idCategory;
+	}
+
+	public void setIdCategory(Short idCategory) {
+		this.idCategory = idCategory;
 	}
 
 	public String getCategory() {

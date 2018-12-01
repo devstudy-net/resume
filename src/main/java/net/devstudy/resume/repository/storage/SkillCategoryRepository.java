@@ -12,7 +12,7 @@ import net.devstudy.resume.entity.SkillCategory;
  * @author devstudy
  * @see http://devstudy.net
  */
-@RepositoryDefinition(domainClass=SkillCategory.class, idClass=Long.class)
+@RepositoryDefinition(domainClass=SkillCategory.class, idClass=String.class)
 public interface SkillCategoryRepository {
 
 	List<SkillCategory> findAll(Sort sort);

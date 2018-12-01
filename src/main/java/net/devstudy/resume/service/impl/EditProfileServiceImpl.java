@@ -48,16 +48,7 @@ import net.devstudy.resume.form.SignUpForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.model.UploadResult;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
-import net.devstudy.resume.repository.storage.AbstractProfileEntityRepository;
-import net.devstudy.resume.repository.storage.CertificateRepository;
-import net.devstudy.resume.repository.storage.CourseRepository;
-import net.devstudy.resume.repository.storage.EducationRepository;
-import net.devstudy.resume.repository.storage.HobbyRepository;
-import net.devstudy.resume.repository.storage.LanguageRepository;
-import net.devstudy.resume.repository.storage.PracticRepository;
 import net.devstudy.resume.repository.storage.SkillCategoryRepository;
-import net.devstudy.resume.repository.storage.SkillRepository;
-import net.devstudy.resume.service.CacheService;
 import net.devstudy.resume.service.EditProfileService;
 import net.devstudy.resume.service.ImageProcessorService;
 import net.devstudy.resume.service.ImageStorageService;
@@ -92,56 +83,22 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Autowired
 	private NotificationManagerService notificationManagerService;
-	
-	@Autowired
-	private CacheService cacheService;
 
 	@Autowired
 	private UploadCertificateLinkManager uploadCertificateLinkManager;
 
 	@Value("${profile.hobbies.max}")
 	private int maxProfileHobbies;
-	
-	@Autowired
-	private CertificateRepository certificateRepository;
-	
-	@Autowired
-	private CourseRepository courseRepository;
-	
-	@Autowired
-	private EducationRepository educationRepository;
-	
-	@Autowired
-	private HobbyRepository hobbyRepository;
-	
-	@Autowired
-	private LanguageRepository languageRepository;
-	
-	@Autowired
-	private PracticRepository practicRepository;
-	
-	@Autowired
-	private SkillRepository skillRepository;
 
-	private Set<String> profileCollectionsToReIndex;
-	
-	private Map<Class<? extends ProfileEntity>, AbstractProfileEntityRepository<? extends ProfileEntity>> profileEntityRepositoryMap;
+	protected Set<String> profileCollectionsToReIndex = new HashSet<>();
 
 	@PostConstruct
 	private void postConstruct() {
-		profileCollectionsToReIndex = Collections.unmodifiableSet(
-				new HashSet<>(Arrays.asList(
-						new String[]{"languages", "skills", "practics", "certificates", "courses"}))); 
-		
-		Map<Class<? extends ProfileEntity>, AbstractProfileEntityRepository<? extends ProfileEntity>> map = new HashMap<>();
-		map.put(Certificate.class, certificateRepository);
-		map.put(Course.class, courseRepository);
-		map.put(Education.class, educationRepository);
-		map.put(Hobby.class, hobbyRepository);
-		map.put(Language.class, languageRepository);
-		map.put(Practic.class, practicRepository);
-		map.put(Skill.class, skillRepository);
-		profileEntityRepositoryMap = Collections.unmodifiableMap(map);
+		profileCollectionsToReIndex.add("languages");
+		profileCollectionsToReIndex.add("skills");
+		profileCollectionsToReIndex.add("practics");
+		profileCollectionsToReIndex.add("certificates");
+		profileCollectionsToReIndex.add("courses");
 	}
 
 	protected Profile getProfile(CurrentProfile currentProfile) {
@@ -174,7 +131,6 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		List<String> imageLinksToRemove = getImageLinksToRemove(profile);
 		profileRepository.delete(profile);
 		removeProfileIndexIfTransactionSuccess(profile, imageLinksToRemove);
-		evilcProfileCacheIfTransactionSuccess(currentProfile);
 	}
 
 	protected List<String> getImageLinksToRemove(Profile profile) {
@@ -244,10 +200,8 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		synchronized (this) {
 			checkForDuplicatesEmailAndPhone(loadedProfile);
 			profileRepository.save(loadedProfile);
-			profileRepository.flush();
 		}
 		updateIndexProfileDataIfTransactionSuccess(currentProfile, loadedProfile, oldProfilePhotos);
-		evilcProfileCacheIfTransactionSuccess(currentProfile);
 	}
 
 	protected void checkForDuplicatesEmailAndPhone(Profile profileForm) {
@@ -323,7 +277,6 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 		boolean shouldProfileBeUpdated = copiedFieldsCount > 0;
 		if (shouldProfileBeUpdated) {
 			profileRepository.save(loadedProfile);
-			evilcProfileCacheIfTransactionSuccess(currentProfile);
 		} else {
 			LOGGER.debug("Profile contacts not updated");
 		}
@@ -337,7 +290,6 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 			loadedProfile.setInfo(form.getInfo());
 			profileRepository.save(loadedProfile);
 			updateIndexProfileInfoIfTransactionSuccess(currentProfile, loadedProfile);
-			evilcProfileCacheIfTransactionSuccess(currentProfile);
 		} else {
 			LOGGER.debug("Profile info not updated");
 		}
@@ -356,7 +308,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Hobby> listHobbiesWithProfileSelected(CurrentProfile currentProfile) {
-		List<Hobby> profileHobbies = hobbyRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		List<Hobby> profileHobbies = getProfile(currentProfile).getHobbies();
 		List<Hobby> hobbies = new ArrayList<>();
 		for (Hobby h : staticDataService.listAllHobbies()) {
 			boolean selected = profileHobbies.contains(h);
@@ -377,7 +329,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Language> listLanguages(CurrentProfile currentProfile) {
-		return languageRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getLanguages();
 	}
 
 	@Override
@@ -388,7 +340,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Skill> listSkills(CurrentProfile currentProfile) {
-		return skillRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getSkills();
 	}
 
 	@Override
@@ -421,7 +373,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Practic> listPractics(CurrentProfile currentProfile) {
-		return practicRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getPractics();
 	}
 
 	@Override
@@ -432,7 +384,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Education> listEducations(CurrentProfile currentProfile) {
-		return educationRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getEducations();
 	}
 
 	@Override
@@ -443,7 +395,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Certificate> listCertificates(CurrentProfile currentProfile) {
-		return certificateRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getCertificates();
 	}
 
 	@Override
@@ -471,7 +423,7 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	@Override
 	public List<Course> listCourses(CurrentProfile currentProfile) {
-		return courseRepository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		return getProfile(currentProfile).getCourses();
 	}
 
 	@Override
@@ -482,8 +434,8 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 
 	protected <E extends ProfileEntity> void updateProfileEntities(CurrentProfile currentProfile, List<E> updatedData, Class<E> entityClass) {
 		String collections = DataUtil.getCollectionName(entityClass);
-		AbstractProfileEntityRepository<E> repository = findProfileEntityRepository(entityClass);
-		List<E> profileData = repository.findByProfileIdOrderByIdAsc(currentProfile.getId());
+		Profile profile = getProfile(currentProfile);
+		List<E> profileData = getProfileEntities(profile, collections);
 		DataUtil.removeEmptyElements(updatedData);
 		if (Comparable.class.isAssignableFrom(entityClass)) {
 			Collections.sort((List<? extends Comparable>) updatedData);
@@ -492,38 +444,22 @@ public class EditProfileServiceImpl extends AbstractCreateProfileService impleme
 			LOGGER.debug("Profile {}: nothing to update", collections);
 			return;
 		} else {
-			executeProfileEntitiesUpdate(currentProfile, repository, updatedData);
-			evilcProfileCacheIfTransactionSuccess(currentProfile);
+			executeProfileEntitiesUpdate(profile, updatedData, collections);
 			updateIndexProfileEntitiesIfTransactionSuccess(currentProfile, updatedData, collections);
 		}
 	}
-	
-	protected <E extends ProfileEntity> AbstractProfileEntityRepository<E> findProfileEntityRepository(Class<E> entityClass) {
-		AbstractProfileEntityRepository<E> repository = (AbstractProfileEntityRepository<E>) profileEntityRepositoryMap.get(entityClass);
-		if(repository == null) {
-			throw new IllegalArgumentException("ProfileEntityRepository not found for entityClass="+entityClass);
+
+	protected <E extends ProfileEntity> List<E> getProfileEntities(Profile profile, String collections) {
+		List<E> profileData = (List<E>) DataUtil.readProperty(profile, collections);
+		if (profileData == null) {
+			profileData = Collections.EMPTY_LIST;
 		}
-		return repository;
+		return profileData;
 	}
 
-	protected <E extends ProfileEntity> void executeProfileEntitiesUpdate(CurrentProfile currentProfile, AbstractProfileEntityRepository<E> repository, List<E> updatedData) {
-		repository.deleteByProfileId(currentProfile.getId());
-		repository.flush();
-		Profile profileProxy = profileRepository.getOne(currentProfile.getId());
-		for(E entity : updatedData) {
-			entity.setId(null);
-			entity.setProfile(profileProxy);
-			repository.saveAndFlush(entity);
-		}
-	}
-	
-	protected void evilcProfileCacheIfTransactionSuccess(final CurrentProfile currentProfile){
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-			@Override
-			public void afterCommit() {
-				cacheService.deleteProfileByUid(currentProfile.getUid());
-			}
-		});
+	protected <E extends ProfileEntity> void executeProfileEntitiesUpdate(Profile profile, List<E> updatedData, String collections) {
+		DataUtil.writeProperty(profile, collections, updatedData);
+		profileRepository.save(profile);
 	}
 
 	protected <E extends ProfileEntity> void updateIndexProfileEntitiesIfTransactionSuccess(final CurrentProfile currentProfile, final List<E> updatedData, final String collections) {

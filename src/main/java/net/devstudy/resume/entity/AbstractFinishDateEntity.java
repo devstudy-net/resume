@@ -2,12 +2,6 @@ package net.devstudy.resume.entity;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,20 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author devstudy
  * @see http://devstudy.net
  */
-@MappedSuperclass
-public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {
-	private static final long serialVersionUID = -3388293457711051284L;
+public abstract class AbstractFinishDateEntity<T> {
 
-	@Column(name = "finish_date")
-	@Temporal(TemporalType.DATE)
 	@JsonIgnore
 	private Date finishDate;
 	
-	@Transient
 	@JsonIgnore
 	private Integer finishDateMonth;
 
-	@Transient
 	@JsonIgnore
 	private Integer finishDateYear;
 	
@@ -42,12 +30,10 @@ public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {
 		this.finishDate = finishDate;
 	}
 
-	@Transient
 	public boolean isFinish() {
 		return finishDate != null;
 	}
-
-	@Transient
+	
 	public Integer getFinishDateMonth() {
 		if (finishDate != null) {
 			return new DateTime(finishDate).getMonthOfYear();
@@ -56,7 +42,6 @@ public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {
 		}
 	}
 
-	@Transient
 	public Integer getFinishDateYear() {
 		if (finishDate != null) {
 			return new DateTime(finishDate).getYear();

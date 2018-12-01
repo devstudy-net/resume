@@ -22,7 +22,7 @@
 		</encoder>
 	</appender>
 
-	<!--logger name="org.hibernate.SQL" level="debug" /> <logger name="org.hibernate.type" level="trace" /-->
+	<!--logger name="org.springframework.data.mongodb.core.MongoTemplate" level="debug" /-->
 
 	<logger name="net.devstudy.resume.service.impl" level="debug" />
 

@@ -7,7 +7,7 @@ package net.devstudy.resume.model;
  */
 public interface CurrentProfile {
 
-	Long getId();
+	String getId();
 	
 	String getUid();
 }

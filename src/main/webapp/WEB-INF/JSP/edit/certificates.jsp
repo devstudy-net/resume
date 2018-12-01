@@ -17,7 +17,7 @@
 			<sec:csrfInput/>
 			<div id="ui-block-container">
 				<c:forEach var="certificate" items="${certificateForm.items }" varStatus="status">
-					<resume:edit-certificate-block index="${status.index }" id="${certificate.id }" 
+					<resume:edit-certificate-block index="${status.index }" 
 								largeUrl="${certificate.largeUrl }" smallUrl="${certificate.smallUrl }" name="${certificate.name }" />
 				</c:forEach>
 			</div>

@@ -8,10 +8,9 @@
 
 <div id="ui-item-${index }" class="row ui-item skill-item">
 	<div class="col-xs-5 col-sm-4 col-md-2 form-group">
-		<input type="hidden" name="items[${index }].id" value="${skill.id }" /> 
 		<select name="items[${index }].idCategory" class="form-control">
 			<c:forEach var="category" items="${skillCategories }">
-			<option value="${category.id }" ${category.id == skill.idCategory ? ' selected="selected"' : ''}>${category.category }</option>
+			<option value="${category.idCategory }" ${category.idCategory == skill.idCategory ? ' selected="selected"' : ''}>${category.category }</option>
 			</c:forEach>
 		</select>
 	</div>
