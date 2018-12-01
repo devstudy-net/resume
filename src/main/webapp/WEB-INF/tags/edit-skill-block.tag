@@ -9,9 +9,9 @@
 <div id="ui-item-${index }" class="row ui-item skill-item">
 	<div class="col-xs-5 col-sm-4 col-md-2 form-group">
 		<input type="hidden" name="items[${index }].id" value="${skill.id }" /> 
-		<select name="items[${index }].category" class="form-control">
+		<select name="items[${index }].idCategory" class="form-control">
 			<c:forEach var="category" items="${skillCategories }">
-			<option value="${category.category }" ${category.category == skill.category ? ' selected="selected"' : ''}>${category.category }</option>
+			<option value="${category.id }" ${category.id == skill.idCategory ? ' selected="selected"' : ''}>${category.category }</option>
 			</c:forEach>
 		</select>
 	</div>
@@ -24,6 +24,8 @@
 </div>
 <div class="row skill-delim" >
 	<div class="col-xs-offset-5 col-sm-offset-4 col-md-offset-2 col-xs-7 col-sm-8 col-md-10" style="padding-left:0px;">
-		<form:errors path="items[${index }].value" cssClass="alert alert-danger" element="div" />
+	<c:if test="${skill != null }">
+		<resume:form-error path="items[${index }].value" displayIcon="false" />
+		</c:if>
 	</div>
 </div>

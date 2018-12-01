@@ -15,6 +15,7 @@ import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.scope.ExtendedPermissions;
 import com.restfb.scope.ScopeBuilder;
+import com.restfb.scope.UserDataPermissions;
 import com.restfb.types.User;
 
 import net.devstudy.resume.entity.Profile;
@@ -26,47 +27,54 @@ public class FacebookController {
 
 	@Value("${social.facebook.idClient}")
 	private String idClient;
-	
+
 	@Value("${social.facebook.secret}")
 	private String secret;
-	
+
 	private String redirectUrl;
-	
-	@Value("${app.host}")
+
+	@Value("${application.host}")
 	public void setRedirectUrl(String appHost) {
-		this.redirectUrl = appHost+"/fromFb";
+		this.redirectUrl = appHost + "/fromFb";
 	}
-	
+
 	@Autowired
 	private SocialService<User> facebookSocialService;
-	
+
 	private String getAuthorizeUrl() {
-		ScopeBuilder scopeBuilder = new ScopeBuilder();
-		scopeBuilder.addPermission(ExtendedPermissions.EMAIL);
+		ScopeBuilder scopeBuilder = new ScopeBuilder()
+				.addPermission(ExtendedPermissions.EMAIL).addPermission(UserDataPermissions.USER_BIRTHDAY)
+				.addPermission(UserDataPermissions.USER_HOMETOWN).addPermission(UserDataPermissions.USER_LOCATION);
 		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
 		return client.getLoginDialogUrl(idClient, redirectUrl, scopeBuilder);
 	}
-	
-	@RequestMapping(value={"/fbLogin"}, method=RequestMethod.GET)
-	public String gotoFacebook(){
-		return "redirect:"+getAuthorizeUrl();
+
+	@RequestMapping(value = { "/fbLogin", "fbSignUp" }, method = RequestMethod.GET)
+	public String gotoFacebook() {
+		return "redirect:" + getAuthorizeUrl();
 	}
-	
-	@RequestMapping(value={"/fromFb"}, method=RequestMethod.GET)
-	public String fromFb(@RequestParam(value="code", required=false) String code) {
-		if(StringUtils.isBlank(code)) {
+
+	@RequestMapping(value = { "/fromFb" }, method = RequestMethod.GET)
+	public String fromFb(@RequestParam(value = "code", required = false) String code) {
+		if (StringUtils.isBlank(code)) {
 			return "redirect:/sign-in";
+		} else {
+			User user = fetchMe(code);
+			Profile p = facebookSocialService.loginOrSignup(user);
+			if (p != null) {
+				SecurityUtil.authentificateWithRememberMe(p);
+				return "redirect:/" + p.getUid();
+			} else {
+				return "redirect:/sign-in";
+			}
 		}
+	}
+
+	protected User fetchMe(String code) {
 		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
 		AccessToken accessToken = client.obtainUserAccessToken(idClient, secret, redirectUrl, code);
 		client = new DefaultFacebookClient(accessToken.getAccessToken(), Version.VERSION_2_6);
-		User user = client.fetchObject("me", User.class, Parameter.with("fields", "name,email,first_name,last_name"));
-		Profile p = facebookSocialService.loginViaSocialNetwork(user);
-		if(p != null) {
-			SecurityUtil.authentificate(p);
-			return "redirect:/"+p.getUid();
-		} else{
-			return "redirect:/sign-in";
-		}
+		User user = client.fetchObject("me", User.class, Parameter.with("fields", "id,email,first_name,last_name,birthday,hometown,location"));
+		return user;
 	}
 }

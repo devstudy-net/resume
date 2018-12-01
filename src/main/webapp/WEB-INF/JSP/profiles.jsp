@@ -8,7 +8,7 @@
 	</div>
 	<c:if test="${page.number < page.totalPages - 1}">
 	<div id="loadMoreContainer" class="col-xs-12 text-center">
-		<a href="javascript:resume.moreProfiles();" class="btn btn-primary">Load more</a>
+		<a href="javascript:resume.moreProfiles('${query }');" class="btn btn-primary">Загрузить еще</a>
 	</div>
 	<div id="loadMoreIndicator" class="col-xs-12 text-center" style="display:none;">
 		<img src="/static/img/large-loading.gif" alt="loading..."/>

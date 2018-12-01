@@ -1,7 +1,11 @@
 package net.devstudy.resume.model;
 
+import java.beans.PropertyEditorSupport;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+
+import net.devstudy.resume.util.DataUtil;
 
 /**
  * 
@@ -15,9 +19,13 @@ public enum LanguageType {
 	SPOKEN,
 
 	WRITING;
+
+	public String getCaption() {
+		return DataUtil.capitalizeName(name());
+	}
 	
 	public String getDbValue() {
-		return name().toLowerCase();
+		return name();
 	}
 
 	public LanguageType getReverseType() {
@@ -28,6 +36,15 @@ public enum LanguageType {
 		} else {
 			throw new IllegalArgumentException(this+" does not have reverse type");
 		}
+	}
+	
+	public static PropertyEditorSupport getPropertyEditor(){
+		return new PropertyEditorSupport(){
+			@Override
+			public void setAsText(String dbValue) throws IllegalArgumentException {
+				setValue(LanguageType.valueOf(dbValue.toUpperCase()));
+			}
+		};
 	}
 	
 	@Converter

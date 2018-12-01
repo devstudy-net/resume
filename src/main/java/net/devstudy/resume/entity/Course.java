@@ -13,7 +13,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.SafeHtml;
+import org.springframework.data.annotation.Transient;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+import net.devstudy.resume.util.DataUtil;
 
 /**
  * 
@@ -22,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "course")
-public class Course extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity {
+public class Course extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity, Comparable<Course> {
 	private static final long serialVersionUID = 4206575925684228495L;
 
 	@Id
@@ -30,17 +36,21 @@ public class Course extends AbstractFinishDateEntity<Long> implements Serializab
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COURSE_ID_GENERATOR")
 	@Column(unique = true, nullable = false)
 	private Long id;
-	
-	@Column(length=60)
+
+	@Column(length = 60)
+	@EnglishLanguage(withSpechSymbols = false)
 	private String name;
-	
-	@Column(length=60)
+
+	@Column(length = 60)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String school;
-	
+
 	// bi-directional many-to-one association to Profile
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_profile", nullable = false)
 	@JsonIgnore
+	@Transient
 	private Profile profile;
 
 	public Long getId() {
@@ -116,5 +126,10 @@ public class Course extends AbstractFinishDateEntity<Long> implements Serializab
 		} else if (!school.equals(other.school))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Course o) {
+		return DataUtil.compareByFields(o.getFinishDate(), getFinishDate(), true);
 	}
 }

@@ -14,40 +14,55 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
+import net.devstudy.resume.annotation.EnableFormErrorConvertation;
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+import net.devstudy.resume.annotation.constraints.FirstFieldLessThanSecond;
+import net.devstudy.resume.util.DataUtil;
+
 /**
  * 
  * @author devstudy
  * @see http://devstudy.net
  */
 @Entity
-@Table(name="education")
-public class Education extends AbstractEntity<Long> implements Serializable, ProfileEntity {
+@Table(name = "education")
+@FirstFieldLessThanSecond(first = "beginYear", second = "finishYear")
+@EnableFormErrorConvertation(formName="educationForm", fieldReference="finishYear", validationAnnotationClass=FirstFieldLessThanSecond.class)
+public class Education extends AbstractEntity<Long> implements Serializable, ProfileEntity, Comparable<Education> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="EDUCATION_ID_GENERATOR", sequenceName="EDUCATION_SEQ", allocationSize=1)
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="EDUCATION_ID_GENERATOR")
-	@Column(unique=true, nullable=false)
+	@SequenceGenerator(name = "EDUCATION_ID_GENERATOR", sequenceName = "EDUCATION_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDUCATION_ID_GENERATOR")
+	@Column(unique = true, nullable = false)
 	private Long id;
 
-	@Column(nullable=false, length=255)
+	@Column(nullable = false, length = 255)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String faculty;
 
-	@Column(nullable=false, length=100)
+	@Column(nullable = false, length = 100)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String summary;
 
-	@Column(nullable=false, length=2147483647)
+	@Column(nullable = false, length = 2147483647)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String university;
-	
-	@Column(name="begin_year", nullable=false)
+
+	@Column(name = "begin_year", nullable = false)
 	private Integer beginYear;
-	
-	@Column(name="finish_year")
+
+	@Column(name = "finish_year")
 	private Integer finishYear;
 
-	//bi-directional many-to-one association to Profile
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="id_profile", nullable=false)
+	// bi-directional many-to-one association to Profile
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_profile", nullable = false)
 	private Profile profile;
 
 	public Education() {
@@ -108,9 +123,9 @@ public class Education extends AbstractEntity<Long> implements Serializable, Pro
 	public void setFinishYear(Integer finishYear) {
 		this.finishYear = finishYear;
 	}
-	
+
 	@Transient
-	public boolean isFinish(){
+	public boolean isFinish() {
 		return finishYear != null;
 	}
 
@@ -167,5 +182,15 @@ public class Education extends AbstractEntity<Long> implements Serializable, Pro
 		} else if (!university.equals(other.university))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Education o) {
+		int res = DataUtil.compareByFields(o.getFinishYear(), getFinishYear(), true);
+		if(res == 0) {
+			return DataUtil.compareByFields(o.getBeginYear(), getBeginYear(), true);
+		} else {
+			return res;
+		}
 	}
 }

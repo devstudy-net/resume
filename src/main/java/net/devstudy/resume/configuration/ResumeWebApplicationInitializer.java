@@ -3,6 +3,7 @@ package net.devstudy.resume.configuration;
 import java.util.EnumSet;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -10,6 +11,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.sitemesh.builder.SiteMeshFilterBuilder;
 import org.sitemesh.config.ConfigurableSiteMeshFilter;
+import org.sitemesh.content.tagrules.html.Sm2TagRuleBundle;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -21,7 +23,8 @@ import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import net.devstudy.resume.component.impl.ApplicationListener;
-import net.devstudy.resume.filter.ResumeFilter;
+import net.devstudy.resume.component.impl.DebugFilter;
+import net.devstudy.resume.component.impl.ErrorHandler;
 
 /**
  * 
@@ -51,23 +54,27 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 	}
 
 	private void registerFilters(ServletContext container, WebApplicationContext ctx) {
-		registerFilter(container, ctx.getBean(ResumeFilter.class));
+		registerFilter(container, ctx.getBean(ErrorHandler.class));
 		registerFilter(container, new CharacterEncodingFilter("UTF-8", true));
 		registerFilter(container, new OpenEntityManagerInViewFilter());
 		registerFilter(container, new RequestContextFilter());
-		registerFilter(container, new DelegatingFilterProxy("springSecurityFilterChain"), "springSecurityFilterChain");
+		registerDebugFilterIfEnabled(container, ctx.getBean(DebugFilter.class));
+		registerFilter(container, new DelegatingFilterProxy("springSecurityFilterChain", ctx), "springSecurityFilterChain");
 		registerFilter(container, buildConfigurableSiteMeshFilter(), "sitemesh");
+	}
+	
+	private void registerDebugFilterIfEnabled(ServletContext container, DebugFilter filter) {
+		if(filter.isEnabledDebug() && filter.getDebugUrl().length != 0) {
+			FilterRegistration.Dynamic filterRegistration = container.addFilter(filter.getClass().getSimpleName(), filter);
+			for(String url : filter.getDebugUrl()) {
+				filterRegistration.addMappingForUrlPatterns(null, true, url);
+			}
+		}
 	}
 
 	private void registerFilter(ServletContext container, Filter filter, String... filterNames) {
 		String filterName = filterNames.length > 0 ? filterNames[0] : filter.getClass().getSimpleName();
 		container.addFilter(filterName, filter).addMappingForUrlPatterns(null, true, "/*");
-	}
-	
-	private void registerSpringMVCDispatcherServlet(ServletContext container, WebApplicationContext ctx) {
-		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
-		servlet.setLoadOnStartup(1);
-		servlet.addMapping("/");
 	}
 
 	private ConfigurableSiteMeshFilter buildConfigurableSiteMeshFilter() {
@@ -75,9 +82,16 @@ public class ResumeWebApplicationInitializer implements WebApplicationInitialize
 			@Override
 			protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
 				builder
-					.addDecoratorPath("/*", 		 "/WEB-INF/template/page-template.jsp")
-					.addDecoratorPath("/fragment/*", "/WEB-INF/template/fragment-template.jsp");
+					.addDecoratorPath("/*",          "/WEB-INF/template/page-template.jsp")
+					.addDecoratorPath("/fragment/*", "/WEB-INF/template/fragment-template.jsp")
+					.addTagRuleBundle(new Sm2TagRuleBundle());
 			}
 		};
+	}
+
+	private void registerSpringMVCDispatcherServlet(ServletContext container, WebApplicationContext ctx) {
+		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
+		servlet.setLoadOnStartup(1);
+		servlet.addMapping("/");
 	}
 }

@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
+import net.devstudy.resume.validator.FirstFieldLessThanSecondConstraintValidator;
+
 /**
  * 
  * 
@@ -19,10 +21,10 @@ import javax.validation.Payload;
  */
 @Target({ TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = {})
+@Constraint(validatedBy = FirstFieldLessThanSecondConstraintValidator.class)
 @Documented
 public @interface FirstFieldLessThanSecond {
-	String message() default "FieldMatch";
+	String message() default "FirstFieldLessThanSecond";
 
 	Class<?>[] groups() default {};
 

@@ -13,7 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 
 /**
  * 
@@ -32,12 +36,16 @@ public class Certificate extends AbstractEntity<Long> implements Serializable, P
 	private Long id;
 
 	@Column(name="large_url", nullable=false, length=255)
+	@JsonIgnore
 	private String largeUrl;
 	
 	@Column(name="small_url", nullable=false, length=255)
+	@JsonIgnore
 	private String smallUrl;
 
 	@Column(nullable=false, length=50)
+	@SafeHtml
+	@EnglishLanguage
 	private String name;
 
 	//bi-directional many-to-one association to Profile

@@ -1,0 +1,39 @@
+/*
+ * Bootstrap v3.3.6 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+/* 
+ * normalize.css v3.0.3 (https://github.com/necolas/normalize.css)
+ * Copyright © Nicolas Gallagher and Jonathan Neal
+ * Licensed under MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md)
+ */
+/*
+ *  Font Awesome 4.5.0 by @davegandy - (http://fontawesome.io) - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/*
+ * Datepicker for Bootstrap v1.6.0 (https://github.com/eternicode/bootstrap-datepicker)
+ * Copyright 2012 Stefan Petre
+ * Improvements by Andrew Rowls
+ * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+ */
+/*
+ * Bootstrap slider v6.1.6 (https://github.com/seiyria/bootstrap-slider)
+ * Maintainers: Kyle Kemp, Rohit Kalkur
+ * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+ */
+/*
+ * File input v4.3.2 styling for Bootstrap 3.0 (https://github.com/kartik-v/bootstrap-fileinput) 
+ * Copyright © Kartik Visweswaran, Krajee.com, 2014 - 2015
+ * Read more at http://plugins.krajee.com/file-input
+ * 
+ * Licensed under the BSD 3-Clause License (https://github.com/kartik-v/bootstrap-fileinput/blob/master/LICENSE.md)
+ */
+/*
+ * Timeline UI for Bootstrap 3.0 (https://gist.github.com/LibertysYarn/8722008) 
+ */
+/*
+ * Sport and hobby font (http://www.fontspace.com/alan-carr/sports-and-hobbies)
+ * @font-face kit by Fonts2u (http://www.fonts2u.com)
+ */

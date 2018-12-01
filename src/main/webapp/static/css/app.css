@@ -1,5 +1,14 @@
 @charset "UTF-8";
 
+/* @font-face kit by Fonts2u (http://www.fonts2u.com) for font http://www.fontspace.com/alan-carr/sports-and-hobbies */
+@font-face {
+	font-family: "Sports and Hobbies";
+	src: url("../fonts/sporthob.eot?") format("eot"), url("../fonts/sporthob.woff") format("woff"), url("../fonts/sporthob.ttf") format("truetype"), url("../fonts/sporthob.svg#SportsAndHobbies")
+		format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
 .resume {
 	background-color: #eae8e7;
 	color: #222;
@@ -51,11 +60,311 @@
 	display: inline-block;
 }
 
-.resume a.edit-block {
-    color: #fffaf0;
-    float: right;
-    font-size: 0.9em;
-    text-decoration: underline;
+.resume .hobby.hobby-cycling::before {
+	content: "\f206"
+}
+
+.resume .hobby.hobby-handball::before {
+	font-family: "Sports and Hobbies";
+	content: "!"
+}
+
+.resume .hobby.hobby-football::before {
+	font-family: "Sports and Hobbies";
+	content: "#"
+}
+
+.resume .hobby.hobby-basketball::before {
+	font-family: "Sports and Hobbies";
+	content: "U"
+}
+
+.resume .hobby.hobby-bowling::before {
+	font-family: "Sports and Hobbies";
+	content: ")"
+}
+
+.resume .hobby.hobby-boxing::before {
+	font-family: "Sports and Hobbies";
+	content: "J"
+}
+
+.resume .hobby.hobby-volleyball::before {
+	font-family: "Sports and Hobbies";
+	content: "'"
+}
+
+.resume .hobby.hobby-baseball::before {
+	font-family: "Sports and Hobbies";
+	content: "O"
+}
+
+.resume .hobby.hobby-skating::before {
+	font-family: "Sports and Hobbies";
+	content: "@"
+}
+
+.resume .hobby.hobby-skiing::before {
+	font-family: "Sports and Hobbies";
+	content: "D"
+}
+
+.resume .hobby.hobby-table-tennis::before {
+	font-family: "Sports and Hobbies";
+	content: "4"
+}
+
+.resume .hobby.hobby-tennis::before {
+	font-family: "Sports and Hobbies";
+	content: "2"
+}
+
+.resume .hobby.hobby-weightlifting::before {
+	font-family: "Sports and Hobbies";
+	content: "L"
+}
+
+.resume .hobby.hobby-cricket::before {
+	font-family: "Sports and Hobbies";
+	content: "%"
+}
+
+.resume .hobby.hobby-automobiles::before {
+	content: "\f1b9"
+}
+
+.resume .hobby.hobby-book-reading::before {
+	content: "\f02d"
+}
+
+.resume .hobby.hobby-photo::before {
+	content: "\f030"
+}
+
+.resume .hobby.hobby-shopping:before {
+	content: "\f290"
+}
+
+.resume .hobby.hobby-cooking:before {
+	content: "\f0f5"
+}
+
+.resume .hobby.hobby-codding:before {
+	content: "\f121"
+}
+
+.resume .hobby.hobby-animals:before {
+	content: "\f1b0"
+}
+
+.resume .hobby.hobby-traveling:before {
+	content: "\f0f2"
+}
+
+.resume .hobby.hobby-movie:before {
+	content: "\f26c"
+}
+
+.resume .hobby.hobby-painting:before {
+	content: "\f1fc"
+}
+
+.resume .hobby.hobby-darts::before {
+	font-family: "Sports and Hobbies";
+	content: "b"
+}
+
+.resume .hobby.hobby-fishing::before {
+	font-family: "Sports and Hobbies";
+	content: "f"
+}
+
+.resume .hobby.hobby-kayak-slalom::before {
+	font-family: "Sports and Hobbies";
+	content: "t"
+}
+
+.resume .hobby.hobby-games-of-chance::before {
+	font-family: "Sports and Hobbies";
+	content: "x"
+}
+
+.resume .hobby.hobby-ice-hockey::before {
+	font-family: "Sports and Hobbies";
+	content: "P"
+}
+
+.resume .hobby.hobby-roller-skating::before {
+	font-family: "Sports and Hobbies";
+	content: "A"
+}
+
+.resume .hobby.hobby-swimming::before {
+	font-family: "Sports and Hobbies";
+	content: "I"
+}
+
+.resume .hobby.hobby-diving::before {
+	font-family: "Sports and Hobbies";
+	content: "<"
+}
+
+.resume .hobby.hobby-golf::before {
+	font-family: "Sports and Hobbies";
+	content: "8"
+}
+
+.resume .hobby.hobby-shooting::before {
+	font-family: "Sports and Hobbies";
+	content: "]"
+}
+
+.resume .hobby.hobby-rowing::before {
+	font-family: "Sports and Hobbies";
+	content: "u"
+}
+
+.resume .hobby.hobby-camping::before {
+	font-family: "Sports and Hobbies";
+	content: "d"
+}
+
+.resume .hobby.hobby-archery::before {
+	font-family: "Sports and Hobbies";
+	content: "^"
+}
+
+.resume .hobby.hobby-pubs::before {
+	content: "\f0fc"
+}
+
+.resume .hobby.hobby-music::before {
+	content: "\f001"
+}
+
+.resume .hobby.hobby-computer-games::before {
+	content: "\f11b"
+}
+
+.resume .hobby.hobby-authorship::before {
+	content: "\f11c"
+}
+
+.resume .hobby.hobby-foreign-lang::before {
+	content: "\f1ab"
+}
+
+.resume .hobby.hobby-singing::before {
+	content: "\f130"
+}
+
+.resume .hobby.hobby-billiards::before {
+	font-family: "Sports and Hobbies";
+	content: "-"
+}
+
+.resume .hobby.hobby-skateboarding::before {
+	font-family: "Sports and Hobbies";
+	content: "W"
+}
+
+.resume .hobby.hobby-collecting::before {
+	content: "\f1c5"
+}
+
+.resume .hobby.hobby-badminton::before {
+	font-family: "Sports and Hobbies";
+	content: "."
+}
+
+.resume .hobby.hobby-disco::before {
+	content: "\f0c0"
+}
+
+.resume a.navbar-brand {
+	padding: 15px;
+	font-size: 1.4em;
+}
+
+.resume .profiles .photo {
+	width: 110px;
+	height: 110px;
+	border-radius: 4px;
+}
+
+.resume blockquote .small::before, .resume blockquote footer::before, .resume blockquote small::before {
+	content: "";
+}
+
+.resume .profiles blockquote {
+	margin: 0;
+	padding-left: 8px;
+}
+
+.resume .profiles .search-result-item p {
+	margin: 1px 0;
+}
+
+.resume .well p {
+	margin: 0;
+}
+
+.resume .data-form img.edit-photo {
+	width: 250px;
+	height: 250px;
+}
+
+.resume .data-form blockquote {
+	font-size: 14px;
+	margin: 0;
+	text-align: justify;
+}
+
+.resume .data-form .help-block {
+	margin-bottom: 5px;
+}
+
+@media ( max-width :768px) {
+	.resume .data-form blockquote {
+		border: 0;
+		padding-left: 0;
+	}
+	.resume .data-form .form-group {
+		margin: 0;
+	}
+}
+
+.resume .data-form .form-group {
+	border-top: 1px solid #eee;
+	padding-top: 10px;
+}
+
+.resume .data-header {
+	text-align: center;
+	margin: 5px 0 15px;
+}
+
+.resume .hobby-btn {
+	text-align: left;
+	font-size: 20px;
+	margin: 5px 0;
+	position: relative;
+	padding-left: 50px;
+}
+
+.resume .hobby-btn i {
+	position: absolute;
+	left: 10px;
+	font-size: 1.3em;
+	top: 8px;
+	text-align: center;
+	width: 30px;
+}
+
+.resume .btn.hobby-btn.active, .resume .btn.hobby-btn:active {
+	background-color: #5cb85c;
+	border-color: #5cb85c;
+	color: white;
 }
 
 .resume .skill-delim {
@@ -80,25 +389,24 @@
 .resume .skill-item .value-container .close {
 	position: absolute;
 	right: 15px;
-	top:-5px;
+	top: -5px;
 }
 
-.resume .profiles blockquote {
-	margin: 0;
-	padding-left: 8px;
+.resume a.edit-block {
+	color: #fffaf0;
+	float: right;
+	font-size: 0.9em;
+	text-decoration: underline;
 }
 
-.resume .profiles .search-result-item p {
-	margin: 1px 0;
-}
-
-.resume .well p {
-	margin: 0;
+.resume a.certificate:hover, .resume a.certificate:hover span {
+	text-decoration: none;
 }
 
 .resume #loadMoreContainer {
 	margin-bottom: 15px;
 }
+
 .resume #loadMoreIndicator img {
 	width: 30px;
 	height: 30px;
@@ -109,8 +417,75 @@
 	margin: 0 auto;
 }
 
-.resume .profiles .photo {
-    border-radius: 4px;
-    height: 110px;
-    width: 110px;
+.resume .profile-menu a {
+	position: relative;
+}
+
+.resume .profile-menu a i {
+	display: block;
+	float: left;
+	width: 22px;
+	font-size: 1.2em;
+	text-align: center;
+	padding-top: 2px;
+}
+
+.resume .form-control-feedback {
+	right: 15px;
+}
+
+.resume .edit-languages .form-control-feedback {
+	right: 5px;
+}
+
+.resume .edit-password .form-control-feedback {
+	right: 0px;
+}
+
+.resume h1 {
+	margin-bottom: 15px;
+	margin-top: 10px;
+}
+
+@media ( max-width : 767px) {
+	.resume .caption {
+		font-size: 20px;
+	}
+}
+
+@media ( min-width : 768px) and (max-width: 991px) {
+	.resume .caption {
+		font-size: 24px;
+	}
+}
+
+@media ( min-width : 992px) and (max-width: 1199px) {
+	.resume .caption {
+		font-size: 26px;
+	}
+}
+
+@media ( min-width : 1200px) {
+	.resume .caption {
+		font-size: 36px;
+	}
+}
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	/* Margin bottom by footer height */
+	margin-bottom: 60px;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/* Set the fixed height of the footer here */
+	height: 60px;
+	background-color: #f5f5f5;
 }

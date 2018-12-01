@@ -7,6 +7,11 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.validator.constraints.SafeHtml;
+import org.hibernate.validator.constraints.URL;
+
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+
 /**
  * 
  * @author devstudy
@@ -18,21 +23,33 @@ public class Contacts implements Serializable {
 	private static final long serialVersionUID = -3685720846934765841L;
 	
 	@Column(length = 80)
+	@SafeHtml
+	@EnglishLanguage
 	private String skype;
 
 	@Column(length = 255)
+	@EnglishLanguage
+	@URL(host="vk.com")
 	private String vkontakte;
 
 	@Column(length = 255)
+	@EnglishLanguage
+	@URL(host="facebook.com")
 	private String facebook;
 
 	@Column(length = 255)
+	@EnglishLanguage
+	@URL(host="linkedin.com")
 	private String linkedin;
 
 	@Column(length = 255)
+	@EnglishLanguage
+	@URL(host="github.com")
 	private String github;
 	
 	@Column(length = 255)
+	@EnglishLanguage
+	@URL(host="stackoverflow.com")
 	private String stackoverflow;
 
 	public Contacts() {

@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
+import net.devstudy.resume.validator.AdulthoodConstraintValidator;
+
 /**
  * 
  * @author devstudy
@@ -22,7 +24,7 @@ import javax.validation.Payload;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = { })
+@Constraint(validatedBy = { AdulthoodConstraintValidator.class })
 public @interface Adulthood {
 
 	String message() default "Adulthood";

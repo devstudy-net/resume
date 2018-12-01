@@ -9,12 +9,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import net.devstudy.resume.Constants;
+import net.devstudy.resume.service.impl.RememberMeService;
 
 /**
  * 
@@ -30,22 +32,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private DataSource dataSource;
 	
-	@Bean
-	public PersistentTokenRepository persistentTokenRepository(){
-		JdbcTokenRepositoryImpl persistentTokenRepository = new JdbcTokenRepositoryImpl();
-		persistentTokenRepository.setDataSource(dataSource);
-		return persistentTokenRepository;
-	}
+	@Autowired
+	private RememberMeService persistentTokenRememberMeService;
 	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
-	}
-	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-	}
+	@Autowired
+	private AccessDeniedHandler accessDeniedHandler;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -60,14 +51,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.defaultSuccessUrl("/my-profile")
 			.failureUrl("/sign-in-failed");
 		http.logout()
-			.logoutUrl("/sign-out")
+			.logoutUrl("/logout")
 			.logoutSuccessUrl("/welcome")
 			.invalidateHttpSession(true)
 			.deleteCookies("JSESSIONID");
 		http.rememberMe()
 			.rememberMeParameter("remember-me")
-			.key("resume-online")
-			.tokenRepository(persistentTokenRepository());
-		http.csrf().disable();
+			.rememberMeServices(persistentTokenRememberMeService);
+		http.exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+	}
+	
+	@Bean
+	public PersistentTokenRepository persistentTokenRepository(){
+		JdbcTokenRepositoryImpl persistentTokenRepository = new JdbcTokenRepositoryImpl();
+		persistentTokenRepository.setDataSource(dataSource);
+		return persistentTokenRepository;
+	}
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 }

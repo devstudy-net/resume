@@ -1,3 +1,5 @@
 Supported keywords inside method names:  https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
 
 Spring data Query creation: http://docs.spring.io/spring-data/commons/docs/current/reference/html/#repositories.query-methods.details
+
+http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.custom-behaviour-for-all-repositories

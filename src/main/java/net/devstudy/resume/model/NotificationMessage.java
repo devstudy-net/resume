@@ -1,5 +1,11 @@
 package net.devstudy.resume.model;
 
+/**
+ * 
+ * 
+ * @author devstudy
+ * @see http://devstudy.net
+ */
 public class NotificationMessage {
 	private String destinationAddress;
 	private String destinationName;

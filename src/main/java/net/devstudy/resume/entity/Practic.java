@@ -1,7 +1,7 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,11 +13,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.constraints.SafeHtml;
+import org.hibernate.validator.constraints.URL;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.devstudy.resume.annotation.EnableFormErrorConvertation;
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+import net.devstudy.resume.annotation.constraints.FirstFieldLessThanSecond;
+import net.devstudy.resume.util.DataUtil;
 
 /**
  * 
@@ -26,7 +35,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "practic")
-public class Practic extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity {
+@FirstFieldLessThanSecond(first = "beginDate", second = "finishDate")
+@EnableFormErrorConvertation(formName="practicForm", fieldReference="finishDate", validationAnnotationClass=FirstFieldLessThanSecond.class)
+public class Practic extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity, Comparable<Practic> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -36,27 +47,43 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 	private Long id;
 
 	@Column(nullable = false, length = 100)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String company;
 
 	@Column(length = 255)
+	@JsonIgnore
+	@EnglishLanguage
+	@URL
 	private String demo;
 
 	@Column(length = 255)
+	@JsonIgnore
+	@EnglishLanguage
+	@URL
 	private String src;
 
 	@Column(nullable = false, length = 100)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String position;
 
 	@Column(nullable = false, length = 2147483647)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols = false)
 	private String responsibilities;
 
 	@Column(name = "begin_date", nullable = false)
+	@Temporal(TemporalType.DATE)
+	@JsonIgnore
 	private Date beginDate;
 
 	@Transient
+	@JsonIgnore
 	private Integer beginDateMonth;
 
 	@Transient
+	@JsonIgnore
 	private Integer beginDateYear;
 
 	// bi-directional many-to-one association to Profile
@@ -233,5 +260,15 @@ public class Practic extends AbstractFinishDateEntity<Long> implements Serializa
 		} else if (!src.equals(other.src))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Practic o) {
+		int res = DataUtil.compareByFields(o.getFinishDate(), getFinishDate(), true);
+		if(res == 0) {
+			return DataUtil.compareByFields(o.getBeginDate(), getBeginDate(), true);
+		} else {
+			return res;
+		}
 	}
 }

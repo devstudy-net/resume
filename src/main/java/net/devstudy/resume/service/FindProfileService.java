@@ -1,5 +1,8 @@
 package net.devstudy.resume.service;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,11 +15,15 @@ import net.devstudy.resume.entity.Profile;
  */
 public interface FindProfileService {
 
-	Profile findByUid(String uid);
+	@Nonnull Page<Profile> findAll(@Nonnull Pageable pageable);
+
+	@Nullable Profile findByUid(@Nonnull String uid);
+
+	@Nonnull Page<Profile> findBySearchQuery(@Nonnull String query, @Nonnull Pageable pageable);
+
+	void restoreAccess(@Nonnull String anyUnigueId);
 	
-	Page<Profile> findAll(Pageable pageable);
+	@Nullable Profile findByRestoreToken(@Nonnull String token);
 	
-	Iterable<Profile> findAllForIndexing();
-	
-	Page<Profile> findBySearchQuery(String query, Pageable pageable);
+	@Nonnull Iterable<Profile> findAllForIndexing();
 }

@@ -7,14 +7,33 @@
 			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</layout>
 	</appender>
+	<!-- http://logback.qos.ch/manual/appenders.html -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>C:/apache-tomcat-8.0.22/logs/resume.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>resume.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 3GB total size -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
 
 	<!--logger name="org.hibernate.SQL" level="debug" /> <logger name="org.hibernate.type" level="trace" /-->
 
-	<!--logger name="net.devstudy.resume.service.impl" level="debug" />
+	<logger name="net.devstudy.resume.service.impl" level="debug" />
 
-	<logger name="net.devstudy.resume.controller" level="debug" /-->
+	<logger name="net.devstudy.resume.controller" level="debug" />
+	
+	<logger name="net.devstudy.resume.component.impl.JpegTranImageOptimizator" level="debug" />
+	
+	<logger name="net.devstudy.resume.component.impl.UploadImageTempStorage" level="debug" />
 
 	<root level="info">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
 	</root>
 </configuration>

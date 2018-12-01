@@ -1,8 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.devstudy</groupId>
-	<artifactId>resume</artifactId>
+	<artifactId>resume-jpa</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>resume Maven Webapp</name>
@@ -36,6 +35,74 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>com.samaxes.maven</groupId>
+				<artifactId>minify-maven-plugin</artifactId>
+				<version>1.7.4</version>
+				<executions>
+					<execution>
+						<id>common-minify</id>
+						<phase>package</phase>
+						<configuration>
+							<charset>UTF-8</charset>
+							<cssSourceDir>/static/css</cssSourceDir>
+							<cssSourceFiles>
+								<cssSourceFile>bootstrap-3.3.6.css</cssSourceFile>
+								<cssSourceFile>bootstrap-theme-3.3.6.css</cssSourceFile>
+								<cssSourceFile>font-awesome-4.5.0.css</cssSourceFile>
+								<cssSourceFile>timeline.css</cssSourceFile>
+								<cssSourceFile>app.css</cssSourceFile>
+							</cssSourceFiles>
+							<cssTargetDir>/static/css</cssTargetDir>
+							<cssFinalFile>resume-common.css</cssFinalFile>
+							<jsSourceDir>/static/js</jsSourceDir>
+							<jsSourceFiles>
+								<jsSourceFile>jquery-2.2.2.js</jsSourceFile>
+								<jsSourceFile>bootstrap-3.3.6.js</jsSourceFile>
+								<jsSourceFile>app.js</jsSourceFile>
+							</jsSourceFiles>
+							<jsFinalFile>resume-common.js</jsFinalFile>
+							<jsTargetDir>/static/js</jsTargetDir>
+							<verbose>true</verbose>
+							<jsEngine>CLOSURE</jsEngine>
+							<closureLanguage>ECMASCRIPT5</closureLanguage>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>full-minify</id>
+						<phase>package</phase>
+						<configuration>
+							<charset>UTF-8</charset>
+							<cssSourceDir>/static/css</cssSourceDir>
+							<cssSourceFiles>
+								<cssSourceFile>bootstrap-datepicker-1.6.0.css</cssSourceFile>
+								<cssSourceFile>bootstrap-slider-6.1.6.css</cssSourceFile>
+								<cssSourceFile>fileinput-4.3.2.css</cssSourceFile>
+							</cssSourceFiles>
+							<cssTargetDir>/static/css</cssTargetDir>
+							<cssFinalFile>resume-ex.css</cssFinalFile>
+							<jsSourceDir>/static/js</jsSourceDir>
+							<jsSourceFiles>
+								<jsSourceFile>bootstrap-datepicker-1.6.0.js</jsSourceFile>
+								<jsSourceFile>bootstrap-slider-6.1.6.js</jsSourceFile>
+								<jsSourceFile>handlebars-4.0.5.js</jsSourceFile>
+								<jsSourceFile>fileinput-4.3.2.js</jsSourceFile>
+							</jsSourceFiles>
+							<jsFinalFile>resume-ex.js</jsFinalFile>
+							<jsTargetDir>/static/js</jsTargetDir>
+							<verbose>true</verbose>
+							<jsEngine>CLOSURE</jsEngine>
+							<closureLanguage>ECMASCRIPT5</closureLanguage>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.8</version>
 				<executions>
@@ -46,6 +113,10 @@
 						<configuration>
 							<tasks>
 								<delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
+								<delete file="${basedir}/src/main/webapp/static/css/resume-common.min.css" />
+								<delete file="${basedir}/src/main/webapp/static/css/resume-ex.min.css" />
+								<delete file="${basedir}/src/main/webapp/static/js/resume-common.min.js" />
+								<delete file="${basedir}/src/main/webapp/static/js/resume-ex.min.js" />
 							</tasks>
 						</configuration>
 						<goals>
@@ -60,9 +131,12 @@
 							<tasks>
 								<delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
 								<copy todir="${basedir}/src/main/webapp/WEB-INF/lib">
-									<fileset
-										dir="${basedir}/target/${project.build.finalName}/WEB-INF/lib" />
+									<fileset dir="${basedir}/target/${project.build.finalName}/WEB-INF/lib" />
 								</copy>
+								<copy file="${basedir}/target/${project.build.finalName}/static/css/resume-common.min.css" tofile="${basedir}/src/main/webapp/static/css/resume-common.min.css" />
+								<copy file="${basedir}/target/${project.build.finalName}/static/css/resume-ex.min.css" tofile="${basedir}/src/main/webapp/static/css/resume-ex.min.css" />
+								<copy file="${basedir}/target/${project.build.finalName}/static/js/resume-common.min.js" tofile="${basedir}/src/main/webapp/static/js/resume-common.min.js" />
+								<copy file="${basedir}/target/${project.build.finalName}/static/js/resume-ex.min.js" tofile="${basedir}/src/main/webapp/static/js/resume-ex.min.js" />
 							</tasks>
 						</configuration>
 						<goals>
@@ -87,82 +161,27 @@
 			<version>2.2</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.5</version>
-		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4.1208.jre7</version>
-		</dependency>
-		<dependency>
-			<groupId>net.coobird</groupId>
-			<artifactId>thumbnailator</artifactId>
-			<version>0.4.8</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.sitemesh</groupId>
-			<artifactId>sitemesh</artifactId>
-			<version>3.0.1</version>
+			<version>9.4.1207.jre7</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>4.2.5.RELEASE</version>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>4.2.5.RELEASE</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>5.1.0.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<version>2.1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>5.2.4.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>4.2.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
@@ -170,19 +189,11 @@
 			<artifactId>spring-data-jpa</artifactId>
 			<version>1.10.1.RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
 			<version>2.0.1.RELEASE</version>
 		</dependency>
-
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>4.2.2</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -199,6 +210,80 @@
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>4.0.4.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>4.2.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.2.4.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.1.0.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.6.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sitemesh</groupId>
+			<artifactId>sitemesh</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.8</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -206,6 +291,18 @@
 			<version>1.4.7</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>7.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>4.2.2</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
@@ -216,6 +313,18 @@
 			<groupId>com.restfb</groupId>
 			<artifactId>restfb</artifactId>
 			<version>1.23.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.moparisthebest</groupId>
+			<artifactId>junidecode</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

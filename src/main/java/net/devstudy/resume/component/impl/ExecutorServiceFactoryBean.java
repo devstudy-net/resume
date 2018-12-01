@@ -10,6 +10,12 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * 
+ * 
+ * @author devstudy
+ * @see http://devstudy.net
+ */
 @Component("defaultExecutorService")
 public class ExecutorServiceFactoryBean implements FactoryBean<ExecutorService> {
 	public static final String AUTO = "AUTO";

@@ -28,8 +28,7 @@ public class NotificationManagerServiceImpl implements NotificationManagerServic
 	@Override
 	public void sendRestoreAccessLink(Profile profile, String restoreLink) {
 		LOGGER.debug("Restore link: {} for account {}", restoreLink, profile.getUid());
-		Map<String, Object> model = new HashMap<>();
-		model.put("profile", profile);
+		Map<String, Object> model = buildNewModelWithProfile(profile);
 		model.put("restoreLink", restoreLink);
 		processNotification(profile, "restoreAccessNotification", model);
 	}
@@ -37,12 +36,24 @@ public class NotificationManagerServiceImpl implements NotificationManagerServic
 	@Override
 	public void sendPasswordChanged(Profile profile) {
 		LOGGER.debug("Password changed for account {}", profile.getUid());
+		processNotification(profile, "passwordChangedNotification", buildNewModelWithProfile(profile));
+	}
+	
+	@Override
+	public void sendPasswordGenerated(Profile profile, String generatedPassword) {
+		LOGGER.debug("Password generated for account {}", profile.getUid());
+		Map<String, Object> model = buildNewModelWithProfile(profile);
+		model.put("generatedPassword", generatedPassword);
+		processNotification(profile, "passwordGeneratedNotification", model);
+	}
+	
+	protected Map<String, Object> buildNewModelWithProfile(Profile profile) {
 		Map<String, Object> model = new HashMap<>();
 		model.put("profile", profile);
-		processNotification(profile, "passwordChangedNotification", model);
+		return model;
 	}
 
-	private void processNotification(Profile profile, String templateName, Object model) {
+	protected void processNotification(Profile profile, String templateName, Object model) {
 		String destinationAddress = notificationSenderService.getDestinationAddress(profile);
 		if (StringUtils.isNotBlank(destinationAddress)) {
 			NotificationMessage notificationMessage = notificationTemplateService.createNotificationMessage(templateName, model);

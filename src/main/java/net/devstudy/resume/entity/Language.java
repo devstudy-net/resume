@@ -15,8 +15,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 
@@ -27,7 +30,7 @@ import net.devstudy.resume.model.LanguageType;
  */
 @Entity
 @Table(name="language")
-public class Language extends AbstractEntity<Long> implements Serializable, ProfileEntity {
+public class Language extends AbstractEntity<Long> implements Serializable, ProfileEntity, Comparable<Language> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -37,10 +40,13 @@ public class Language extends AbstractEntity<Long> implements Serializable, Prof
 	private Long id;
 
 	@Column(nullable=false)
+	@JsonIgnore
 	@Convert(converter = LanguageLevel.PersistJPAConverter.class)
 	private LanguageLevel level;
 
 	@Column(nullable=false, length=30)
+	@SafeHtml
+	@EnglishLanguage(withSpechSymbols=false, withNumbers=false, withPunctuations=false)
 	private String name;
 	
 	@Column
@@ -144,5 +150,10 @@ public class Language extends AbstractEntity<Long> implements Serializable, Prof
 		if (type != other.type)
 			return false;
 		return true;
+	}
+	
+	@Override
+	public int compareTo(Language o) {
+		return getName().compareToIgnoreCase(o.getName());
 	}
 }

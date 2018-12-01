@@ -1,14 +1,25 @@
 <%@ tag pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="resume" tagdir="/WEB-INF/tags"%>
+
+<%@ attribute name="certificates" required="true" type="java.util.List" %>
+<%@ attribute name="showEdit"  required="false" type="java.lang.Boolean" %>
 
 <div class="panel panel-primary certificates">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<i class="fa fa-certificate"></i> Certificates <a class="edit-block" href="/edit/certificates">Edit</a>
+			<i class="fa fa-certificate"></i> Certificates
+			<c:if test="${showEdit }"><a href="/edit/certificates" class="edit-block">Edit</a></c:if>
 		</h3>
 	</div>
 	<div class="panel-body">
-		<a data-url="/media/certificates/10e5b86b-fd5b-490a-9090-6e71270ed40f.jpg" data-title="Jee certificate" href="#" class="thumbnail certificate-link">
-			<img alt="Jee certificate" src="/media/certificates/10e5b86b-fd5b-490a-9090-6e71270ed40f-sm.jpg" class="img-responsive"> <span>Jee certificate</span>
-		</a> 
+		<c:forEach var="certificate" items="${certificates }">
+		<a class="thumbnail certificate-link" href="#" data-title="${certificate.name }" data-url="${certificate.largeUrl }"> 
+			<img class="img-responsive" src="${certificate.smallUrl }" alt="${certificate.name }">
+			<span>${certificate.name }</span>
+		</a>
+		</c:forEach>
 	</div>
 </div>
+
+<resume:certificate-viewer />

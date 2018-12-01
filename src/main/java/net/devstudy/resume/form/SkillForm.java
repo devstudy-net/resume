@@ -1,6 +1,5 @@
 package net.devstudy.resume.form;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +12,7 @@ import net.devstudy.resume.entity.Skill;
  * @author devstudy
  * @see http://devstudy.net
  */
-public class SkillForm implements Serializable {
-	private static final long serialVersionUID = 4135568197764740034L;
+public class SkillForm {
 	@Valid
 	private List<Skill> items = new ArrayList<>();
 	

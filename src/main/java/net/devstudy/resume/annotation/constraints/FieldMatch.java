@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
+import net.devstudy.resume.validator.FieldMatchConstraintValidator;
+
 /**
  * https://github.com/Rudeg/Spring-MVC-Example/blob/master/Lab%202/src/main/java
  * /com/springexample/common/constraits/FieldMatch.java
@@ -28,7 +30,7 @@ import javax.validation.Payload;
  */
 @Target({ TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = {})
+@Constraint(validatedBy = FieldMatchConstraintValidator.class)
 @Documented
 public @interface FieldMatch {
 	String message() default "FieldMatch";

@@ -1,10 +1,10 @@
 package net.devstudy.resume.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 
 /**
@@ -24,7 +23,7 @@ import net.devstudy.resume.repository.storage.ProfileRepository;
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemoveNotCompletedProfileService {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(RemoveNotCompletedProfileService.class);
 	@Autowired
 	private ProfileRepository profileRepository;
 
@@ -35,10 +34,7 @@ public class RemoveNotCompletedProfileService {
 	@Scheduled(cron = "0 59 23 * * *")
 	public void removeNotCompletedProfiles() {
 		DateTime date = DateTime.now().minusDays(removeNotCompletedProfilesInterval);
-		List<Long> idsToRemove = new ArrayList<>();
-		for (Profile profile : profileRepository.findByCompletedFalseAndCreatedBefore(new Timestamp(date.getMillis()))) {
-			idsToRemove.add(profile.getId());
-			profileRepository.delete(profile);
-		}
+		int removed = profileRepository.deleteNotCompleted(new Timestamp(date.getMillis()));
+		LOGGER.info("Removed {} profiles", removed);
 	}
 }

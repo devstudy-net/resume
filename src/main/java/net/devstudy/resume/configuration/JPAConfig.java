@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @see http://devstudy.net
  */
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:properties/jpa.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories("net.devstudy.resume.repository.storage")
 public class JPAConfig {
@@ -53,6 +53,7 @@ public class JPAConfig {
 		Properties properties = new Properties();
 		properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
 		properties.put("javax.persistence.validation.mode", "none");
+		properties.put("org.hibernate.flushMode", "COMMIT");
 		return properties;
 	}
 	

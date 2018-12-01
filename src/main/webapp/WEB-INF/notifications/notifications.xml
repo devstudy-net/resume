@@ -13,4 +13,11 @@
         	<value>This email is to notify you that the password for your account ${profile.uid} has been changed.</value>
         </property>
     </bean>
+    
+    <bean id="passwordGeneratedNotification" class="net.devstudy.resume.model.NotificationMessage">
+        <property name="subject" value="Password generated" />
+        <property name="content">
+        	<value>A new password for social account generated. Your credentials are: login=${profile.uid}, password=${generatedPassword}</value>
+        </property>
+    </bean>
 </beans>

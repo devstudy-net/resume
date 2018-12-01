@@ -117,11 +117,7 @@ public class Hobby extends AbstractEntity<Long> implements Serializable, Compara
 	
 	@Override
 	public int compareTo(Hobby o) {
-		if(o == null || getName() == null) {
-			return 1;
-		} else{
-			return getName().compareTo(o.getName());
-		}
+		return getName().compareTo(o.getName());
 	}
 
 	@Override
