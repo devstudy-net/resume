@@ -1,0 +1,77 @@
+#
+# @author devstudy
+# @see http://devstudy.net
+# @see https://docs.docker.com/compose/compose-file/
+#
+# docker-compose build
+# docker-compose up
+# docker-compose down
+
+version: '3.7'
+
+services:
+  resume-mongo:
+    image: mongo:4.1.13-bionic
+    container_name: resume-mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=resume
+    ports:
+      - 27017:27017
+    volumes:
+      - ./docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - data-private
+
+  resume-backend:
+    restart: always
+    build:
+      context: ./
+      dockerfile: docker/resume-backend.dockerfile
+    image: devstudy/resume-backend:1.0
+    container_name: resume-backend
+    environment:
+      # App settings:
+      - appHost=http://localhost
+      # Email settings:
+      - smtpServer=smtp.gmail.com
+      - smtpPort=465
+      - smtpUsername=${DEVSTUDY_RESUME_SMTP_USERNAME}
+      - smtpPassword=${DEVSTUDY_RESUME_SMTP_PASSWORD}
+      - fromEmail=devstudy.net@gmail.com
+      - fromName=DevStudy.net
+      # Facebook application settings
+      - facebookClientId=${DEVSTUDY_RESUME_FACEBOOK_CLIENT_ID}
+      - facebookSecret=${DEVSTUDY_RESUME_FACEBOOK_SECRET}
+      # Remote debugging
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    ports:
+      - 8080:8080
+      - 8765:8000
+    volumes:
+      - ./docker:/opt/content
+    networks:
+      - data-private
+    depends_on:
+      - resume-mongo
+    command: sh -c '/wait-for-it.sh resume-mongo:27017 -t 5 -- catalina.sh jpda run'
+
+  resume-frontend:
+    restart: always
+    build:
+      context: ./
+      dockerfile: docker/resume-frontend.dockerfile
+    image: devstudy/resume-frontend:1.0
+    container_name: resume-frontend
+    volumes:
+      - ./docker/media:/opt/content/media
+      - ./src/main/webapp/static:/opt/content/static
+    ports:
+      - 80:80
+    networks:
+      - data-private
+
+networks:
+  data-private:
+    driver: bridge
