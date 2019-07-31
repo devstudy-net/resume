@@ -78,7 +78,7 @@ public class Profile extends AbstractDocument<String> implements Serializable {
 	@NotNull
 	@Size(max=20)
 	@Phone
-	@Indexed(unique=true)
+	@Indexed(unique=true, name = "phone_idx")
 	private String phone;
 
 	@JsonIgnore
@@ -87,7 +87,7 @@ public class Profile extends AbstractDocument<String> implements Serializable {
 	@Size(max=100)
 	@Email
 	@EnglishLanguage
-	@Indexed(unique=true)
+	@Indexed(unique=true, name = "email_idx")
 	private String email;
 	
 	@ProfileInfoField
@@ -99,17 +99,17 @@ public class Profile extends AbstractDocument<String> implements Serializable {
 	@EnglishLanguage
 	private String summary;
 
-	@Indexed(unique=true)
+	@Indexed(unique=true, name = "uid_idx")
 	private String uid;
 	
 	@JsonIgnore
 	private String password;
 	
 	@JsonIgnore
-	@Indexed
+	@Indexed(name = "completed_idx")
 	private boolean completed;
 	
-	@Indexed
+	@Indexed(name = "created_idx")
 	private Date created;
 
 	private List<Certificate> certificates;

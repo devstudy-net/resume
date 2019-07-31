@@ -32,7 +32,7 @@ public class ServiceConfig {
 	 * 
 	 * Also, be particularly careful with BeanPostProcessor and BeanFactoryPostProcessor definitions via @Bean. 
 	 * Those should usually be declared as static @Bean methods, not triggering the instantiation of their containing configuration class. 
-	 * Otherwise, @Autowired and @Value won’t work on the configuration class itself since it is being created as a bean instance too early.
+	 * Otherwise, @Autowired and @Value won't work on the configuration class itself since it is being created as a bean instance too early.
 	 */
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() throws IOException {
