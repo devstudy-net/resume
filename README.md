@@ -5,14 +5,16 @@
 ## Инструкция по запуску проекта в docker контейнерах
 
 Для сборки и запуска данного проекта в docker контейнерах на компьютер необходимо установить ТОЛЬКО **docker** и **docker-compose**. 
-Все необходимые для сборки и запуска программные компоненты доступны в виде docker образов на docker hub и поэтому docker подтянет их из интернета. (https://hub.docker.com/u/devstudy)
+Все необходимые для сборки и запуска программные компоненты доступны в виде docker образов на docker hub и поэтому docker подтянет их из интернета. 
+(https://hub.docker.com/u/devstudy)
 
-*Т.е. на компьютер **НЕ НУЖНО устанавливать** git, java, maven, tomcat, mongodb и nginx.*
+*Т.е. на компьютер **НЕ НУЖНО устанавливать**: git, java, maven, tomcat, mongodb и nginx.*
 
 
 ### Настройка системы разработчика:
 
-Установка **docker** зависит от операционной системы, поэтому на официальном сайте необходимо выбрать Вашу операционную систему и следуя инструкциям установить **docker** и **docker-compose**:
+Установка **docker** зависит от операционной системы, поэтому на официальном сайте необходимо выбрать Вашу операционную систему и 
+следуя инструкциям установить **docker** и **docker-compose**:
 
 * [Инструкция по установке docker](https://docs.docker.com/install/#supported-platforms)
 * [Инструкция по установке docker-compose](https://docs.docker.com/compose/install/#install-compose)
@@ -28,32 +30,32 @@ sudo apt update && sudo apt install -y docker.io && sudo systemctl start docker
 sudo apt install -y curl && sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
 ~~~~
 
+**FYI: Самой удобной операционной системой для docker является Linux, самой неудобной - Windows!**
+
 ### Сборка и запуск проекта:
 
-###### ! Для запуска docker команд на Linux необходимы привилегии root:
+###### ! Если Вы залогинены в Вашу систему не администратором, то необходимо: (Особенно актуально для Linux пользователей):
+1. Добавить текущего пользователя в группу docker:
 ~~~~
 sudo usermod -aG docker $USER
 logout
 login
 ~~~~
-*... данную команду следует пропустить если:*
-* *В Linux системе Вы залогинены пользователем `root`;*
-* *Вы используете Windows или macOS.*
+2. При клонировании и сборки проекта добавлять параметр `-u 1000` после параметра `run`, который запускает docker не от имени `root` пользователя.
+(`1000` - это uid Вашего пользователя)
 
 ###### 1. Клонировать github репозиторий в текущую папку используя docker образ devstudy/git:
 ~~~~
-docker run -it --rm -u 1000 -v "$PWD":/opt/src/ -w /opt/src devstudy/git git clone "https://github.com/devstudy-net/resume"
+docker run -it --rm -v "$PWD":/opt/src/ -w /opt/src devstudy/git git clone "https://github.com/devstudy-net/resume"
 ~~~~
-*... `-u 1000` - данная опция нужна если вы хотите запускать команды не от имени администратора, иначе удалите данный параметр;*
 ###### 2. Изменить текущую папку на корневую папку проекта:
 ~~~~
 cd resume/
 ~~~~
 ###### 3. Собрать проект с помощью maven используя docker образ devstudy/maven:
 ~~~~
-docker run -v ~/:/home/mvn/ -it --rm -u 1000 -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
+docker run -v ~/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
 ~~~~
-*... `-u 1000` - данная опция нужна если вы хотите запускать команды не от имени администратора, иначе удалите данный параметр;*
 ###### 4. Создать файл .env в папке resume и указать переменные окружения:
 *(Если данный файл не создавать, то в проекте не будут работать модули **email** и **facebook**):*
 ~~~~
