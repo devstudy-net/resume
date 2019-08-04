@@ -21,7 +21,7 @@ services:
     volumes:
       - ./docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
     networks:
-      - data-private
+      - resume-private-network
 
   resume-backend:
     restart: always
@@ -31,6 +31,10 @@ services:
     image: devstudy/resume-backend:1.0
     container_name: resume-backend
     environment:
+      # Database settings
+      - mongoHost=resume-mongo
+      - mongoPort=27017
+      - mongoDb=resume
       # App settings:
       - appHost=http://localhost
       # Email settings:
@@ -50,28 +54,26 @@ services:
       - 8080:8080
       - 8765:8000
     volumes:
-      - ./docker:/opt/content
+      - ./docker/webroot:/opt/content
     networks:
-      - data-private
+      - resume-private-network
     depends_on:
       - resume-mongo
-    command: sh -c '/wait-for-it.sh resume-mongo:27017 -t 5 -- catalina.sh jpda run'
+    command: sh -c '/wait-for-service-up.sh resume-mongo:27017 -- catalina.sh jpda run'
 
   resume-frontend:
-    restart: always
-    build:
-      context: ./
-      dockerfile: docker/resume-frontend.dockerfile
-    image: devstudy/resume-frontend:1.0
+    image: nginx:1.17.2-alpine
     container_name: resume-frontend
+    restart: always
     volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/media:/opt/content/media
       - ./src/main/webapp/static:/opt/content/static
     ports:
       - 80:80
     networks:
-      - data-private
+      - resume-private-network
 
 networks:
-  data-private:
+  resume-private-network:
     driver: bridge
