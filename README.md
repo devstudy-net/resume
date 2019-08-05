@@ -56,7 +56,7 @@ cd resume/
 ~~~~
 docker run -v ~/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
 ~~~~
-###### 4. Создать файл .env в папке resume и указать переменные окружения:
+###### 4. Создать файл '.env' в папке 'resume' и указать переменные окружения:
 *(Если данный файл не создавать, то в проекте не будут работать модули **email** и **facebook**):*
 ~~~~
 DEVSTUDY_RESUME_FACEBOOK_CLIENT_ID=TODO
@@ -71,7 +71,7 @@ docker-compose up
 ~~~~
 *P.S. Если сборка и запуск docker контейнеров прошли успешно в консоли последней строчкой Вы должны увидеть строку, что **resume-backend server успешно запустился:***
 
-`resume-backend     | 30-Jul-2019 16:31:26.917 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 22079 ms` 
+`resume-backend    | 04-Aug-2019 07:37:03.012 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 2502 ms`  
 ###### 6. Открыть браузер и зайти на сайт:
 * Если **docker** устанавливался на текущую машину, то адрес сайта: `http://localhost`
 * Если **docker** устанавливался на удаленную машину, то адрес сайта: `http://${REMOTE_IP_ADDRESS}`

@@ -1,8 +1,8 @@
 .idea
-target
 *.iml
+target
+.env
 
 src/main/webapp/media
 *.min.*
 *.jar
-.env
