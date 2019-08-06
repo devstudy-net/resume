@@ -52,7 +52,7 @@ docker run -it --rm -v "$PWD":/opt/src/ -w /opt/src devstudy/git git clone "http
 ~~~~
 cd resume/
 ~~~~
-###### 3. Собрать проект с помощью maven используя docker образ devstudy/maven:
+###### 3. Собрать проект с помощью maven, используя docker образ devstudy/maven:
 ~~~~
 docker run -v ~/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
 ~~~~
