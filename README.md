@@ -30,32 +30,48 @@ sudo apt update && sudo apt install -y docker.io && sudo systemctl start docker
 sudo apt install -y curl && sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
 ~~~~
 
-**FYI: Самой удобной операционной системой для docker является Linux, самой неудобной - Windows!**
-
 ### Сборка и запуск проекта:
 
-###### ! Если Вы залогинены в Вашу систему не администратором, то необходимо: (Особенно актуально для Linux пользователей):
-1. Добавить текущего пользователя в группу docker:
+###### ! Для Linux систем: Если Вы залогинены в Вашу систему не администратором, то необходимо: 
+Добавить текущего пользователя в группу docker:
 ~~~~
 sudo usermod -aG docker $USER
 logout
 login
 ~~~~
-2. При клонировании и сборки проекта добавлять параметр `-u 1000` после параметра `run`, который запускает docker не от имени `root` пользователя.
-(`1000` - это uid Вашего пользователя)
-
-###### 1. Клонировать github репозиторий в текущую папку используя docker образ devstudy/git:
+###### 1. Клонировать github репозиторий в текущую папку, используя docker образ devstudy/git:
+* Windows:
+~~~~
+docker run -it --rm -v "%cd%":/opt/src/ -w /opt/src devstudy/git git clone "https://github.com/devstudy-net/resume"
+~~~~
+* macOS:
 ~~~~
 docker run -it --rm -v "$PWD":/opt/src/ -w /opt/src devstudy/git git clone "https://github.com/devstudy-net/resume"
 ~~~~
+* Linux:
+~~~~
+docker run -u 1000 -it --rm -v "$PWD":/opt/src/ -w /opt/src devstudy/git git clone "https://github.com/devstudy-net/resume"
+~~~~
+*FYI: (Параметр `-u 1000` означает запуск docker от имени Вашего пользователя в системе. `1000` - это uid Вашего пользователя. Если данный параметр пропустить, то тогда все файлы создадуться от имени `root` пользователя)*
 ###### 2. Изменить текущую папку на корневую папку проекта:
 ~~~~
 cd resume/
 ~~~~
 ###### 3. Собрать проект с помощью maven, используя docker образ devstudy/maven:
+* Windows:
+~~~~
+docker run -v %userprofile%/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "%cd%":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
+~~~~
+* macOS:
 ~~~~
 docker run -v ~/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
 ~~~~
+* Linux:
+~~~~
+docker run -u 1000 -v ~/:/home/mvn/ -it --rm -e MAVEN_CONFIG=/home/mvn/.m2 -v "$PWD":/opt/src/ -w /opt/src devstudy/maven mvn -Duser.home=/home/mvn clean package
+~~~~
+*FYI: (Параметр `-u 1000` означает запуск docker от имени Вашего пользователя в системе. `1000` - это uid Вашего пользователя. Если данный параметр пропустить, то тогда все файлы создадуться от имени `root` пользователя)*
+
 ###### 4. Создать файл '.env' в папке 'resume' и указать переменные окружения:
 *(Если данный файл не создавать, то в проекте не будут работать модули **email** и **facebook**):*
 ~~~~
@@ -101,10 +117,21 @@ docker rmi -f devstudy/git
 docker rmi -f devstudy/maven
 ~~~~
 ###### 3. Удалить все файлы проекта кроме ./docker и ./docker-compose.yml:
+* Windows:
 ~~~~
-rm -rf ./src ./target ./pom.xml ./external ./TODO ./README.md ./.git ./.gitignore
+rmdir /s /q src target external .git
+del /f /q pom.xml README.md .gitignore
+~~~~
+* macOS и Linux:
+~~~~
+rm -rf ./src ./target ./pom.xml ./external ./README.md ./.git ./.gitignore
 ~~~~
 ###### 4. Удалить локальный maven репозиторий:
+* Windows:
+~~~~
+rmdir /s /q %userprofile%\.m2
+~~~~
+* macOS и Linux:
 ~~~~
 rm -rf ~/.m2
 ~~~~
